@@ -1,24 +1,38 @@
 import React, { useRef, useEffect, useState } from "react";
-import { ArrowLeft, MoreHorizontal, Camera, Image, Zap, ZapOff, X } from "lucide-react";
+import { ArrowLeft, MoreHorizontal, Camera, Image, Zap, ZapOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { getFoodAnalysisService, FoodAnalysisResult } from "@/services/foodAnalysis";
+import ApiKeyInput from "./ApiKeyInput";
+import FoodAnalysisResults from "./FoodAnalysisResults";
 
 interface CameraScannerProps {
   isOpen: boolean;
   onClose: () => void;
+  onFoodAnalyzed: (result: FoodAnalysisResult) => void;
 }
 
-const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose }) => {
+const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, onFoodAnalyzed }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [isFlashOn, setIsFlashOn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [needsApiKey, setNeedsApiKey] = useState(false);
+  const [analysisResult, setAnalysisResult] = useState<FoodAnalysisResult | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     if (isOpen) {
-      startCamera();
+      // Vérifier si la clé API est configurée
+      const apiKey = localStorage.getItem('openrouter_api_key');
+      if (!apiKey) {
+        setNeedsApiKey(true);
+      } else {
+        setNeedsApiKey(false);
+        startCamera();
+      }
     } else {
       stopCamera();
     }
@@ -89,6 +103,38 @@ const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose }) => {
     }
   };
 
+  const convertCanvasToBase64 = (canvas: HTMLCanvasElement): string => {
+    return canvas.toDataURL('image/jpeg', 0.8).split(',')[1];
+  };
+
+  const analyzeFood = async (imageBase64: string) => {
+    setIsAnalyzing(true);
+    
+    try {
+      const analysisService = getFoodAnalysisService();
+      if (!analysisService) {
+        throw new Error("Service d'analyse non disponible");
+      }
+
+      const result = await analysisService.analyzeImage(imageBase64);
+      setAnalysisResult(result);
+      
+      toast({
+        title: "Analyse terminée !",
+        description: `${result.name} analysé avec succès`,
+      });
+    } catch (error) {
+      console.error("Erreur lors de l'analyse:", error);
+      toast({
+        title: "Erreur d'analyse",
+        description: error instanceof Error ? error.message : "Impossible d'analyser l'image",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
   const capturePhoto = () => {
     if (videoRef.current && canvasRef.current) {
       const canvas = canvasRef.current;
@@ -101,25 +147,9 @@ const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose }) => {
       if (ctx) {
         ctx.drawImage(video, 0, 0);
         
-        // Convertir en blob pour traitement
-        canvas.toBlob((blob) => {
-          if (blob) {
-            // Ici on pourrait envoyer l'image à une API d'analyse
-            toast({
-              title: "Photo capturée !",
-              description: "Analyse de l'aliment en cours...",
-            });
-            
-            // Simuler une analyse
-            setTimeout(() => {
-              toast({
-                title: "Analyse terminée",
-                description: "Pancakes aux myrtilles détectés !",
-              });
-              onClose();
-            }, 2000);
-          }
-        }, 'image/jpeg', 0.8);
+        // Convertir l'image en base64 et analyser
+        const imageBase64 = convertCanvasToBase64(canvas);
+        analyzeFood(imageBase64);
       }
     }
   };
@@ -131,24 +161,69 @@ const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose }) => {
     input.onchange = (e) => {
       const file = (e.target as HTMLInputElement).files?.[0];
       if (file) {
-        toast({
-          title: "Image sélectionnée",
-          description: "Analyse de l'image en cours...",
-        });
-        
-        setTimeout(() => {
-          toast({
-            title: "Analyse terminée",
-            description: "Aliment détecté dans l'image !",
-          });
-          onClose();
-        }, 2000);
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const img = document.createElement('img');
+          img.onload = () => {
+            if (canvasRef.current) {
+              const canvas = canvasRef.current;
+              const ctx = canvas.getContext('2d');
+              
+              canvas.width = img.width;
+              canvas.height = img.height;
+              
+              if (ctx) {
+                ctx.drawImage(img, 0, 0);
+                const imageBase64 = convertCanvasToBase64(canvas);
+                analyzeFood(imageBase64);
+              }
+            }
+          };
+          img.src = event.target?.result as string;
+        };
+        reader.readAsDataURL(file);
       }
     };
     input.click();
   };
 
+  const handleApiKeySet = (apiKey: string) => {
+    setNeedsApiKey(false);
+    startCamera();
+  };
+
+  const handleAddToDaily = (result: FoodAnalysisResult) => {
+    onFoodAnalyzed(result);
+    setAnalysisResult(null);
+  };
+
+  const handleCloseResults = () => {
+    setAnalysisResult(null);
+  };
+
+  const handleClose = () => {
+    setAnalysisResult(null);
+    setNeedsApiKey(false);
+    onClose();
+  };
+
   if (!isOpen) return null;
+
+  // Afficher l'input pour la clé API si nécessaire
+  if (needsApiKey) {
+    return <ApiKeyInput onApiKeySet={handleApiKeySet} />;
+  }
+
+  // Afficher les résultats d'analyse
+  if (analysisResult) {
+    return (
+      <FoodAnalysisResults
+        result={analysisResult}
+        onClose={handleCloseResults}
+        onAddToDaily={handleAddToDaily}
+      />
+    );
+  }
 
   return (
     <div className="fixed inset-0 z-50 bg-black">
@@ -157,7 +232,7 @@ const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose }) => {
         <Button
           variant="ghost"
           size="icon"
-          onClick={onClose}
+          onClick={handleClose}
           className="w-10 h-10 rounded-full bg-black/50 text-white hover:bg-black/70"
         >
           <ArrowLeft className="w-5 h-5" />
@@ -214,6 +289,17 @@ const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose }) => {
                 <div className="absolute bottom-0 right-0 w-8 h-8 border-b-4 border-r-4 border-white rounded-br-3xl"></div>
               </div>
             </div>
+            
+            {/* Loading overlay pendant l'analyse */}
+            {isAnalyzing && (
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                <div className="text-white text-center">
+                  <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4" />
+                  <p className="text-lg font-medium">Analyse en cours...</p>
+                  <p className="text-sm text-gray-300">Identification du plat avec IA</p>
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>
@@ -225,10 +311,20 @@ const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose }) => {
           <div className="flex items-center gap-4">
             <div className="w-2 h-2 bg-primary rounded-full"></div>
             <span className="text-sm font-medium">Scan food</span>
-            <Button variant="ghost" size="sm" onClick={capturePhoto}>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={capturePhoto}
+              disabled={isAnalyzing}
+            >
               <Camera className="w-4 h-4" />
             </Button>
-            <Button variant="ghost" size="sm" onClick={openGallery}>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={openGallery}
+              disabled={isAnalyzing}
+            >
               <Image className="w-4 h-4" />
             </Button>
           </div>
@@ -238,7 +334,8 @@ const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose }) => {
         <div className="flex justify-center">
           <Button
             onClick={capturePhoto}
-            className="w-20 h-20 rounded-full bg-white border-4 border-gray-300 hover:bg-gray-100 p-0"
+            disabled={isAnalyzing}
+            className="w-20 h-20 rounded-full bg-white border-4 border-gray-300 hover:bg-gray-100 p-0 disabled:opacity-50"
           >
             <div className="w-16 h-16 rounded-full bg-white border-2 border-gray-400"></div>
           </Button>

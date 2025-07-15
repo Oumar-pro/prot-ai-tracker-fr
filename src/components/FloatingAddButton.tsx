@@ -1,12 +1,23 @@
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import CameraScanner from "./CameraScanner";
+import { FoodAnalysisResult } from "@/services/foodAnalysis";
+import { useToast } from "@/hooks/use-toast";
 
 const FloatingAddButton = () => {
   const [isCameraOpen, setIsCameraOpen] = useState(false);
+  const { toast } = useToast();
 
   const handleAddFood = () => {
     setIsCameraOpen(true);
+  };
+
+  const handleFoodAnalyzed = (result: FoodAnalysisResult) => {
+    toast({
+      title: "Aliment ajouté !",
+      description: `${result.name} a été ajouté à votre journal alimentaire`,
+    });
+    setIsCameraOpen(false);
   };
 
   return (
@@ -21,6 +32,7 @@ const FloatingAddButton = () => {
       <CameraScanner 
         isOpen={isCameraOpen} 
         onClose={() => setIsCameraOpen(false)} 
+        onFoodAnalyzed={handleFoodAnalyzed}
       />
     </>
   );
