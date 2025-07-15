@@ -52,6 +52,11 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
+				// Couleurs personnalisées Prot AI
+				protein: 'hsl(var(--protein-color))',
+				carbs: 'hsl(var(--carbs-color))',
+				fats: 'hsl(var(--fats-color))',
+				calories: 'hsl(var(--calories-color))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
