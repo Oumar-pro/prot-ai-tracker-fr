@@ -100,7 +100,7 @@ Si l'image n'est pas claire ou ne contient pas de nourriture, retourne :
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4.1-2025-04-14',
+        model: 'openai/gpt-4-vision-preview',
         messages: [
           {
             role: 'user',
