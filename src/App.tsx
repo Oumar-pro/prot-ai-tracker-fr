@@ -1,31 +1,16 @@
-import { Toaster } from "@/components/ui/toaster";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { TooltipProvider } from "@/components/ui/tooltip";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "./pages/Home";
-import Analytics from "./pages/Analytics";
-import Settings from "./pages/Settings";
-import NotFound from "./pages/NotFound";
+// src/App.tsx
+import React from 'react';
+import HomePage from './components/HomePage'; // Importez votre nouveau composant HomePage
+// Assurez-vous d'importer votre fichier CSS global si vous en avez un pour Tailwind.
+// D'après votre structure, il devrait s'agir de index.css ou App.css.
+import './index.css'; // Ou le chemin vers votre fichier CSS principal si différent
 
-const queryClient = new QueryClient();
-
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/analytics" element={<Analytics />} />
-          <Route path="/settings" element={<Settings />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
-);
+function App() {
+  // Pour une application React/Vite simple, nous rendons directement le composant HomePage.
+  // Si vous ajoutez un routeur plus tard (ex: React Router DOM), ce fichier serait l'endroit pour le configurer.
+  return (
+    <HomePage />
+  );
+}
 
 export default App;
