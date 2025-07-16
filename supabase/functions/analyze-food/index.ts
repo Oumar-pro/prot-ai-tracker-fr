@@ -93,14 +93,17 @@ Instructions spécifiques :
 Si l'image n'est pas claire ou ne contient pas de nourriture, retourne :
 {"error": "Image non analysable ou ne contient pas de nourriture identifiable"}`;
 
+    // Modèle mis à jour - l'ancien modèle n'existe plus
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${openRouterApiKey}`,
         'Content-Type': 'application/json',
+        'HTTP-Referer': 'https://your-app-domain.com', // Ajout recommandé
+        'X-Title': 'Food Analysis App', // Ajout recommandé
       },
       body: JSON.stringify({
-        model: 'openai/gpt-4-vision-preview',
+        model: 'openai/gpt-4o', // Modèle mis à jour
         messages: [
           {
             role: 'user',
@@ -112,7 +115,8 @@ Si l'image n'est pas claire ou ne contient pas de nourriture, retourne :
               {
                 type: 'image_url',
                 image_url: {
-                  url: `data:image/jpeg;base64,${imageBase64}`
+                  url: `data:image/jpeg;base64,${imageBase64}`,
+                  detail: 'high' // Ajout pour une meilleure analyse
                 }
               }
             ]
@@ -124,25 +128,55 @@ Si l'image n'est pas claire ou ne contient pas de nourriture, retourne :
     });
 
     if (!response.ok) {
-      console.error('OpenRouter API error:', response.status, response.statusText);
-      throw new Error(`API error: ${response.status}`);
+      const errorText = await response.text();
+      console.error('OpenRouter API error:', response.status, response.statusText, errorText);
+      throw new Error(`API error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
-    const content = data.choices[0]?.message?.content;
+    const content = data.choices?.[0]?.message?.content;
 
     if (!content) {
       throw new Error('Empty response from API');
     }
 
-    console.log('Received analysis result');
+    console.log('Received analysis result:', content);
 
-    // Clean response to extract JSON
-    const cleanedContent = content.replace(/```json|```/g, '').trim();
-    const analysisResult = JSON.parse(cleanedContent);
+    // Nettoyage plus robuste de la réponse JSON
+    let cleanedContent = content.trim();
+    
+    // Supprimer les blocs de code markdown
+    cleanedContent = cleanedContent.replace(/```json\s*|\s*```/g, '');
+    
+    // Supprimer tout texte avant le premier {
+    const firstBrace = cleanedContent.indexOf('{');
+    if (firstBrace > 0) {
+      cleanedContent = cleanedContent.substring(firstBrace);
+    }
+    
+    // Supprimer tout texte après le dernier }
+    const lastBrace = cleanedContent.lastIndexOf('}');
+    if (lastBrace > 0) {
+      cleanedContent = cleanedContent.substring(0, lastBrace + 1);
+    }
+
+    let analysisResult: FoodAnalysisResult;
+    
+    try {
+      analysisResult = JSON.parse(cleanedContent);
+    } catch (parseError) {
+      console.error('JSON parsing error:', parseError);
+      console.error('Content to parse:', cleanedContent);
+      throw new Error('Invalid JSON response from AI');
+    }
 
     if (analysisResult.error) {
       throw new Error(analysisResult.error);
+    }
+
+    // Validation des données
+    if (!analysisResult.name || !analysisResult.ingredients || !analysisResult.nutritionalInfo) {
+      throw new Error('Incomplete analysis result');
     }
 
     // Get user ID from auth header
@@ -159,12 +193,14 @@ Si l'image n'est pas claire ou ne contient pas de nourriture, retourne :
         });
 
         // Get user from auth header
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
         
-        if (user) {
+        if (authError) {
+          console.error('Auth error:', authError);
+        } else if (user) {
           console.log('Saving analysis to database for user:', user.id);
           
-          // Save to database
+          // Save to database avec gestion d'erreur améliorée
           const { error: dbError } = await supabase
             .from('food_analyses')
             .insert({
@@ -183,6 +219,7 @@ Si l'image n'est pas claire ou ne contient pas de nourriture, retourne :
               recommendations: analysisResult.recommendations,
               allergies: analysisResult.allergies,
               confidence: analysisResult.confidence,
+              created_at: new Date().toISOString(),
             });
 
           if (dbError) {
