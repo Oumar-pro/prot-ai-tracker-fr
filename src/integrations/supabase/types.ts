@@ -14,7 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      food_analyses: {
+        Row: {
+          allergies: string[] | null
+          calories: number | null
+          carbs: number | null
+          confidence: number | null
+          created_at: string
+          fats: number | null
+          fiber: number | null
+          health_score: number | null
+          id: string
+          image_url: string | null
+          ingredients: string[] | null
+          name: string
+          portion_size: string | null
+          portion_weight: number | null
+          proteins: number | null
+          recommendations: string[] | null
+          sugar: number | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          allergies?: string[] | null
+          calories?: number | null
+          carbs?: number | null
+          confidence?: number | null
+          created_at?: string
+          fats?: number | null
+          fiber?: number | null
+          health_score?: number | null
+          id?: string
+          image_url?: string | null
+          ingredients?: string[] | null
+          name: string
+          portion_size?: string | null
+          portion_weight?: number | null
+          proteins?: number | null
+          recommendations?: string[] | null
+          sugar?: number | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          allergies?: string[] | null
+          calories?: number | null
+          carbs?: number | null
+          confidence?: number | null
+          created_at?: string
+          fats?: number | null
+          fiber?: number | null
+          health_score?: number | null
+          id?: string
+          image_url?: string | null
+          ingredients?: string[] | null
+          name?: string
+          portion_size?: string | null
+          portion_weight?: number | null
+          proteins?: number | null
+          recommendations?: string[] | null
+          sugar?: number | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
