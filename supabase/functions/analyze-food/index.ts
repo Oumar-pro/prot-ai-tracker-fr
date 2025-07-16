@@ -39,9 +39,19 @@ serve(async (req) => {
     
     const { imageBase64 } = await req.json();
     
-    if (!imageBase64) {
+    // Validation de l'image base64
+    if (!imageBase64 || imageBase64.length < 100) {
       return new Response(
-        JSON.stringify({ error: 'Image base64 is required' }),
+        JSON.stringify({ error: 'Image invalide ou trop petite' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Vérifier le format base64
+    const base64Pattern = /^[A-Za-z0-9+/]*={0,2}$/;
+    if (!base64Pattern.test(imageBase64.replace(/\s/g, ''))) {
+      return new Response(
+        JSON.stringify({ error: 'Format d\'image base64 invalide' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
@@ -93,17 +103,21 @@ Instructions spécifiques :
 Si l'image n'est pas claire ou ne contient pas de nourriture, retourne :
 {"error": "Image non analysable ou ne contient pas de nourriture identifiable"}`;
 
-    // Modèle mis à jour - l'ancien modèle n'existe plus
+    // Timeout pour éviter les blocages
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 secondes
+
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${openRouterApiKey}`,
         'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://your-app-domain.com', // Ajout recommandé
-        'X-Title': 'Food Analysis App', // Ajout recommandé
+        'HTTP-Referer': 'https://your-app-domain.com',
+        'X-Title': 'Food Analysis App',
       },
+      signal: controller.signal,
       body: JSON.stringify({
-        model: 'openai/gpt-4o', // Modèle mis à jour
+        model: 'openai/gpt-4o-mini', // Modèle plus stable et moins cher
         messages: [
           {
             role: 'user',
@@ -122,15 +136,34 @@ Si l'image n'est pas claire ou ne contient pas de nourriture, retourne :
             ]
           }
         ],
-        max_tokens: 1000,
+        max_tokens: 800, // Réduit pour éviter les timeouts
         temperature: 0.1,
       }),
     });
 
+    clearTimeout(timeoutId); // Nettoyer le timeout
+
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('OpenRouter API error:', response.status, response.statusText, errorText);
-      throw new Error(`API error: ${response.status} - ${errorText}`);
+      let errorText = 'Unknown error';
+      try {
+        const errorData = await response.json();
+        errorText = errorData.error?.message || errorData.error || response.statusText;
+      } catch {
+        errorText = response.statusText;
+      }
+      
+      console.error('OpenRouter API error:', response.status, errorText);
+      
+      // Retourner une erreur plus spécifique selon le code de statut
+      if (response.status === 401) {
+        throw new Error('API key invalide');
+      } else if (response.status === 429) {
+        throw new Error('Limite de requêtes atteinte, veuillez réessayer plus tard');
+      } else if (response.status === 400) {
+        throw new Error('Requête invalide - vérifiez le format de l\'image');
+      } else {
+        throw new Error(`Erreur API: ${response.status} - ${errorText}`);
+      }
     }
 
     const data = await response.json();
@@ -167,10 +200,32 @@ Si l'image n'est pas claire ou ne contient pas de nourriture, retourne :
     } catch (parseError) {
       console.error('JSON parsing error:', parseError);
       console.error('Content to parse:', cleanedContent);
-      throw new Error('Invalid JSON response from AI');
+      
+      // Fallback: créer une réponse par défaut si le parsing échoue
+      analysisResult = {
+        name: "Plat non identifié",
+        ingredients: ["Ingrédients non identifiés"],
+        nutritionalInfo: {
+          calories: 0,
+          proteins: 0,
+          carbs: 0,
+          fats: 0,
+          fiber: 0,
+          sugar: 0
+        },
+        portion: {
+          size: "inconnue",
+          weight: 0
+        },
+        healthScore: 0,
+        recommendations: ["Impossible d'analyser cette image"],
+        allergies: [],
+        confidence: 0
+      };
     }
 
-    if (analysisResult.error) {
+    // Vérifier si c'est une erreur de l'IA
+    if ('error' in analysisResult) {
       throw new Error(analysisResult.error);
     }
 
@@ -241,12 +296,35 @@ Si l'image n'est pas claire ou ne contient pas de nourriture, retourne :
 
   } catch (error) {
     console.error('Error in analyze-food function:', error);
+    
+    // Gestion d'erreur plus spécifique
+    let errorMessage = 'Erreur d\'analyse';
+    let statusCode = 500;
+    
+    if (error instanceof Error) {
+      if (error.message.includes('API key invalide')) {
+        errorMessage = 'Configuration API incorrecte';
+        statusCode = 401;
+      } else if (error.message.includes('Limite de requêtes')) {
+        errorMessage = 'Service temporairement indisponible, réessayez plus tard';
+        statusCode = 429;
+      } else if (error.message.includes('timeout') || error.name === 'AbortError') {
+        errorMessage = 'Timeout - l\'analyse a pris trop de temps';
+        statusCode = 408;
+      } else if (error.message.includes('format')) {
+        errorMessage = 'Format d\'image non supporté';
+        statusCode = 400;
+      } else {
+        errorMessage = error.message;
+      }
+    }
+    
     return new Response(
       JSON.stringify({ 
-        error: 'Analysis failed', 
-        details: error instanceof Error ? error.message : 'Unknown error' 
+        error: errorMessage,
+        details: error instanceof Error ? error.message : 'Erreur inconnue'
       }),
-      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { status: statusCode, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
 });
