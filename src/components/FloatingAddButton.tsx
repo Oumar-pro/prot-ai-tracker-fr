@@ -1,7 +1,6 @@
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import CameraScanner from "./CameraScanner";
-import { FoodAnalysisResult } from "@/services/foodAnalysis";
+import CameraScanner, { FoodAnalysisResult } from "./CameraScanner";
 import { useToast } from "@/hooks/use-toast";
 
 const FloatingAddButton = () => {

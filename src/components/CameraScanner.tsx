@@ -2,9 +2,29 @@ import React, { useRef, useEffect, useState } from "react";
 import { ArrowLeft, MoreHorizontal, Camera, Image, Zap, ZapOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { getFoodAnalysisService, FoodAnalysisResult } from "@/services/foodAnalysis";
-import ApiKeyInput from "./ApiKeyInput";
+import { supabase } from "@/integrations/supabase/client";
 import FoodAnalysisResults from "./FoodAnalysisResults";
+
+export interface FoodAnalysisResult {
+  name: string;
+  ingredients: string[];
+  nutritionalInfo: {
+    calories: number;
+    proteins: number;
+    carbs: number;
+    fats: number;
+    fiber: number;
+    sugar: number;
+  };
+  portion: {
+    size: string;
+    weight: number;
+  };
+  healthScore: number;
+  recommendations: string[];
+  allergies: string[];
+  confidence: number;
+}
 
 interface CameraScannerProps {
   isOpen: boolean;
@@ -18,21 +38,13 @@ const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, onFoodAn
   const [stream, setStream] = useState<MediaStream | null>(null);
   const [isFlashOn, setIsFlashOn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [needsApiKey, setNeedsApiKey] = useState(false);
   const [analysisResult, setAnalysisResult] = useState<FoodAnalysisResult | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     if (isOpen) {
-      // Vérifier si la clé API est configurée
-      const apiKey = localStorage.getItem('openrouter_api_key');
-      if (!apiKey) {
-        setNeedsApiKey(true);
-      } else {
-        setNeedsApiKey(false);
-        startCamera();
-      }
+      startCamera();
     } else {
       stopCamera();
     }
@@ -111,17 +123,27 @@ const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, onFoodAn
     setIsAnalyzing(true);
     
     try {
-      const analysisService = getFoodAnalysisService();
-      if (!analysisService) {
-        throw new Error("Service d'analyse non disponible");
+      console.log('Starting food analysis...');
+      
+      const { data, error } = await supabase.functions.invoke('analyze-food', {
+        body: { imageBase64 }
+      });
+
+      if (error) {
+        console.error('Edge function error:', error);
+        throw new Error(error.message || 'Analysis failed');
       }
 
-      const result = await analysisService.analyzeImage(imageBase64);
-      setAnalysisResult(result);
+      if (data?.error) {
+        throw new Error(data.error);
+      }
+
+      console.log('Analysis completed:', data);
+      setAnalysisResult(data);
       
       toast({
         title: "Analyse terminée !",
-        description: `${result.name} analysé avec succès`,
+        description: `${data.name} analysé avec succès`,
       });
     } catch (error) {
       console.error("Erreur lors de l'analyse:", error);
@@ -187,14 +209,10 @@ const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, onFoodAn
     input.click();
   };
 
-  const handleApiKeySet = (apiKey: string) => {
-    setNeedsApiKey(false);
-    startCamera();
-  };
-
   const handleAddToDaily = (result: FoodAnalysisResult) => {
     onFoodAnalyzed(result);
     setAnalysisResult(null);
+    onClose(); // Redirection automatique vers l'accueil
   };
 
   const handleCloseResults = () => {
@@ -203,16 +221,10 @@ const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, onFoodAn
 
   const handleClose = () => {
     setAnalysisResult(null);
-    setNeedsApiKey(false);
     onClose();
   };
 
   if (!isOpen) return null;
-
-  // Afficher l'input pour la clé API si nécessaire
-  if (needsApiKey) {
-    return <ApiKeyInput onApiKeySet={handleApiKeySet} />;
-  }
 
   // Afficher les résultats d'analyse
   if (analysisResult) {
