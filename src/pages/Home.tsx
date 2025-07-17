@@ -4,21 +4,22 @@ import WeekCalendar from "@/components/WeekCalendar";
 import FloatingAddButton from "@/components/FloatingAddButton";
 import AnalysisProgress from "@/components/AnalysisProgress";
 import { useTodayMacros } from "@/hooks/useFoodAnalyses";
+import { Progress } from "@/components/ui/progress"; // Gardez cet import si Progress est utilisé ailleurs, sinon il peut être retiré
 import { useState, useEffect } from "react";
 
-// IMPORTEZ VOTRE CLIENT SUPABASE ICI
-import { supabase } from '@/lib/supabaseClient'; // Assurez-vous que ce chemin est correct !
+// Si vous avez un client Supabase importé pour les requêtes directes
+// import { supabase } from '@/lib/supabaseClient'; // Exemple d'importation de votre client Supabase
 
 const Home = () => {
   const { data: macros } = useTodayMacros();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   
-  // État pour stocker les repas récents et l'état de chargement
+  // NOUVEAU : État pour stocker les repas récents et l'état de chargement
   const [recentMeals, setRecentMeals] = useState([]);
   const [loadingMeals, setLoadingMeals] = useState(true);
   const [errorMeals, setErrorMeals] = useState(null);
 
-  // Objectifs journaliers
+  // Objectifs journaliers (restent inchangés)
   const dailyGoals = {
     calories: 2100,
     proteins: 120,
@@ -26,21 +27,18 @@ const Home = () => {
     fats: 70
   };
   
-  // Calculs des progressions
+  // Calculs des progressions (restent inchangés)
   const caloriesProgress = Math.min((macros?.calories || 0) / dailyGoals.calories * 100, 100);
   const proteinsProgress = Math.min((macros?.proteins || 0) / dailyGoals.proteins * 100, 100);
   const carbsProgress = Math.min((macros?.carbs || 0) / dailyGoals.carbs * 100, 100);
   const fatsProgress = Math.min((macros?.fats || 0) / dailyGoals.fats * 100, 100);
   
-  // Écouter les événements d'analyse depuis le FloatingAddButton
+  // Écouter les événements d'analyse depuis le FloatingAddButton (restent inchangés)
   useEffect(() => {
     const handleAnalysisStart = () => setIsAnalyzing(true);
-    const handleAnalysisComplete = () => {
-      setIsAnalyzing(false);
-      // Lorsque l'analyse est complète, recharge les repas récents
-      fetchRecentMeals(); 
-    };
+    const handleAnalysisComplete = () => setIsAnalyzing(false);
     
+    // Custom events pour communication entre composants
     window.addEventListener('analysisStarted', handleAnalysisStart);
     window.addEventListener('analysisCompleted', handleAnalysisComplete);
     
@@ -50,62 +48,73 @@ const Home = () => {
     };
   }, []);
 
-  // Fonction pour charger les repas récents depuis Supabase
-  const fetchRecentMeals = async () => {
-    setLoadingMeals(true);
-    setErrorMeals(null);
-    try {
-      // --- VOTRE VRAIE LOGIQUE SUPABASE EST ICI ---
-      // REMPLACEZ 'your_meals_table' par le nom de votre table Supabase
-      // Assurez-vous que les colonnes sélectionnées correspondent aux propriétés utilisées dans le JSX
-      const { data, error } = await supabase
-        .from('your_meals_table') // <<<< TRÈS IMPORTANT : REMPLACEZ PAR LE NOM DE VOTRE TABLE DE REPAS !
-        .select('id, name, created_at, calories, proteins, carbs, fats, image_url') // <<<< AJUSTEZ CES COLONNES !
-        .order('created_at', { ascending: false }) // Triez par la date de création, plus récents en premier
-        .limit(5); // Limitez au nombre de repas récents que vous voulez afficher
-
-      if (error) {
-        throw error;
-      }
-      
-      // Mappez les données pour correspondre à la structure attendue par le JSX
-      // Notamment 'created_at' vers 'time' et 'image_url' vers 'imageUrl'
-      const formattedMeals = data.map(meal => ({
-          id: meal.id,
-          name: meal.name,
-          // Formatage simple de l'heure : vous pouvez utiliser une librairie comme 'date-fns' pour un formatage plus avancé
-          time: new Date(meal.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-          calories: meal.calories,
-          proteins: meal.proteins,
-          carbs: meal.carbs,
-          fats: meal.fats,
-          imageUrl: meal.image_url // Assurez-vous que votre colonne s'appelle bien 'image_url' dans Supabase
-      }));
-
-      setRecentMeals(formattedMeals || []);
-
-    } catch (error) {
-      console.error("Erreur lors du chargement des repas récents:", error);
-      setErrorMeals("Échec du chargement des repas.");
-      setRecentMeals([]); // Assurez-vous que le tableau est vide en cas d'erreur
-    } finally {
-      setLoadingMeals(false);
-    }
-  };
-
-  // Charge les repas récents au montage initial du composant
+  // NOUVEAU : Logique pour charger les repas récents depuis Supabase
   useEffect(() => {
-    fetchRecentMeals();
-  }, []); 
+    const fetchRecentMeals = async () => {
+      setLoadingMeals(true);
+      setErrorMeals(null);
+      try {
+        // REMPLACEZ CECI PAR VOTRE VRAIE LOGIQUE SUPABASE POUR RÉCUPÉRER LES REPAS
+        // Exemple avec un client Supabase (ajustez le nom de votre table et les colonnes) :
+        // const { data, error } = await supabase
+        //   .from('your_meals_table') // Remplacez 'your_meals_table' par le nom de votre table de repas
+        //   .select('*') // Sélectionnez les colonnes dont vous avez besoin
+        //   .order('created_at', { ascending: false }) // Triez par date de création, plus récents en premier
+        //   .limit(5); // Limitez au nombre de repas récents que vous voulez afficher
 
-  // Calcul de la progression quotidienne moyenne (laisse la logique même si la barre est retirée)
+        // if (error) {
+        //   throw error;
+        // }
+        // setRecentMeals(data || []);
+
+        // --- SIMULATION POUR LE DÉVELOPPEMENT (À SUPPRIMER APRÈS INTÉGRATION SUPABASE) ---
+        // Simule un chargement asynchrone
+        await new Promise(resolve => setTimeout(resolve, 1000)); 
+        const dummyMeals = [
+            {
+                id: 1,
+                name: "Salade de poulet et avocat",
+                time: "12h30",
+                calories: 450,
+                proteins: 30,
+                carbs: 20,
+                fats: 25,
+                imageUrl: "https://via.placeholder.com/80/FFA500/FFFFFF?text=Repas1" // Exemple d'image
+            },
+            {
+                id: 2,
+                name: "Smoothie aux fruits rouges",
+                time: "08h00",
+                calories: 200,
+                proteins: 5,
+                carbs: 40,
+                fats: 2,
+                imageUrl: "https://via.placeholder.com/80/8B008B/FFFFFF?text=Repas2" // Exemple d'image
+            },
+            // Ajoutez d'autres repas si vous voulez tester
+        ];
+        setRecentMeals(dummyMeals);
+        // --- FIN DE SIMULATION ---
+
+      } catch (error) {
+        console.error("Erreur lors du chargement des repas récents:", error);
+        setErrorMeals("Échec du chargement des repas.");
+        setRecentMeals([]); // Assurez-vous que le tableau est vide en cas d'erreur
+      } finally {
+        setLoadingMeals(false);
+      }
+    };
+
+    fetchRecentMeals();
+  }, []); // Le tableau de dépendances vide signifie que cela s'exécute une seule fois au montage du composant
+
+  // Calcul de la progression quotidienne moyenne (reste inchangé, même si la barre est retirée, la valeur peut être utile ailleurs)
   const averageDailyProgress = Math.round((caloriesProgress + proteinsProgress + carbsProgress + fatsProgress) / 4);
 
   return (
-    // Le fond de l'application est maintenant blanc pur
-    <div className="min-h-screen bg-[#FFFFFF] pb-20 relative overflow-hidden">
-      {/* L'arrière-plan avec gradient animé peut être conservé ou retiré si vous voulez un blanc uni partout */}
-      <div className="absolute inset-0 bg-gradient-to-br from-[#FFFFFF] via-[#FFFFFF] to-muted/20 animate-float" />
+    <div className="min-h-screen bg-background pb-20 relative overflow-hidden">
+      {/* Arrière-plan avec gradient animé */}
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted/20 animate-float" />
       
       {/* Header Premium avec effet de verre */}
       <header className="relative z-10 glass-card mx-4 mt-4 rounded-2xl p-6 shadow-elevated">
@@ -126,9 +135,24 @@ const Home = () => {
         {/* Calendrier intégré */}
         <WeekCalendar />
         
-        {/* La section "Votre Progression d'Aujourd'hui" sous le calendrier a été supprimée */}
+        {/* LA SECTION SUIVANTE A ÉTÉ SUPPRIMÉE POUR ENLEVER LA BARRE DE PROGRESSION SOUS LE CALENDRIER */}
+        {/*
+        <div className="mt-6 p-4 bg-primary/5 rounded-xl border border-primary/20">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+              <span className="text-sm font-medium text-foreground">Votre Progression d'Aujourd'hui</span>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full">
+              <span className="text-2xl font-bold text-primary">{averageDailyProgress}%</span>
+            </div>
+          </div>
+          <Progress value={averageDailyProgress} className="h-3 bg-secondary" />
+        </div>
+        */}
       </header>
 
+      {/* DÉBUT DU CONTENU PRINCIPAL */}
       <div className="px-4 py-6 relative z-10">
         {/* Progression d'analyse en cours */}
         <AnalysisProgress 
@@ -258,9 +282,8 @@ const Home = () => {
                 <div className="space-y-4">
                     {recentMeals.map((meal) => (
                         <div key={meal.id} className="glass-card rounded-2xl p-4 shadow-card hover:shadow-elevated transition-all duration-300 flex items-center gap-4">
-                            {/* Assurez-vous que meal.imageUrl correspond à la colonne de votre BDD */}
                             <img 
-                                src={meal.imageUrl || "https://via.placeholder.com/80"} 
+                                src={meal.imageUrl || "https://via.placeholder.com/80"} // Utilisez l'URL de votre image ou un placeholder
                                 alt={meal.name} 
                                 className="w-16 h-16 rounded-lg object-cover" 
                             />
@@ -296,8 +319,9 @@ const Home = () => {
 
 
         {/* Section Repas avec CTA premium (celle qui dit "Vous n'avez ajouté aucun aliment") 
-            Vous pouvez envisager de supprimer ou de modifier cette section si la section "Repas Récents"
-            gère déjà le cas où il n'y a pas de repas. Pour l'instant, je la garde telle quelle.
+            Cette section peut être déplacée si elle n'est plus nécessaire après l'implémentation
+            de la section "Repas récents" dynamique. Pour l'instant, je la garde.
+            Elle peut servir de CTA si recentMeals.length === 0.
         */}
         <div className="glass-card rounded-3xl p-8 shadow-elevated relative overflow-hidden">
           <div className="absolute bottom-0 left-0 w-40 h-40 bg-primary/10 rounded-full blur-3xl"></div>
@@ -321,6 +345,7 @@ const Home = () => {
           </div>
         </div>
       </div>
+      {/* FIN DU CONTENU PRINCIPAL */}
 
       <FloatingAddButton />
       <Navigation />
@@ -329,4 +354,4 @@ const Home = () => {
 };
 
 export default Home;
-  
+                                    
