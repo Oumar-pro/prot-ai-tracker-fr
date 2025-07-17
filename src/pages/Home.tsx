@@ -64,6 +64,7 @@ const Home = () => {
               <p className="text-sm text-muted-foreground">Bonjour Marie Dubois !</p>
             </div>
           </div>
+        </div> 
         
         {/* Calendrier intégré */}
         <WeekCalendar />
