@@ -1,18 +1,25 @@
 import { Apple, Flame, Zap, Wheat, Droplets, Target, User, Calendar } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import WeekCalendar from "@/components/WeekCalendar";
-import MacroCard from "@/components/MacroCard"; // Non utilisé, peut être retiré si vous ne l'utilisez pas ailleurs.
 import FloatingAddButton from "@/components/FloatingAddButton";
 import AnalysisProgress from "@/components/AnalysisProgress";
 import { useTodayMacros } from "@/hooks/useFoodAnalyses";
-import { Progress } from "@/components/ui/progress";
+import { Progress } from "@/components/ui/progress"; // Gardez cet import si Progress est utilisé ailleurs, sinon il peut être retiré
 import { useState, useEffect } from "react";
+
+// Si vous avez un client Supabase importé pour les requêtes directes
+// import { supabase } from '@/lib/supabaseClient'; // Exemple d'importation de votre client Supabase
 
 const Home = () => {
   const { data: macros } = useTodayMacros();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   
-  // Objectifs journaliers
+  // NOUVEAU : État pour stocker les repas récents et l'état de chargement
+  const [recentMeals, setRecentMeals] = useState([]);
+  const [loadingMeals, setLoadingMeals] = useState(true);
+  const [errorMeals, setErrorMeals] = useState(null);
+
+  // Objectifs journaliers (restent inchangés)
   const dailyGoals = {
     calories: 2100,
     proteins: 120,
@@ -20,14 +27,13 @@ const Home = () => {
     fats: 70
   };
   
-  // Calculs des progressions
+  // Calculs des progressions (restent inchangés)
   const caloriesProgress = Math.min((macros?.calories || 0) / dailyGoals.calories * 100, 100);
   const proteinsProgress = Math.min((macros?.proteins || 0) / dailyGoals.proteins * 100, 100);
   const carbsProgress = Math.min((macros?.carbs || 0) / dailyGoals.carbs * 100, 100);
   const fatsProgress = Math.min((macros?.fats || 0) / dailyGoals.fats * 100, 100);
   
-  
-  // Écouter les événements d'analyse depuis le FloatingAddButton
+  // Écouter les événements d'analyse depuis le FloatingAddButton (restent inchangés)
   useEffect(() => {
     const handleAnalysisStart = () => setIsAnalyzing(true);
     const handleAnalysisComplete = () => setIsAnalyzing(false);
@@ -42,7 +48,67 @@ const Home = () => {
     };
   }, []);
 
-  // Calcul de la progression quotidienne moyenne
+  // NOUVEAU : Logique pour charger les repas récents depuis Supabase
+  useEffect(() => {
+    const fetchRecentMeals = async () => {
+      setLoadingMeals(true);
+      setErrorMeals(null);
+      try {
+        // REMPLACEZ CECI PAR VOTRE VRAIE LOGIQUE SUPABASE POUR RÉCUPÉRER LES REPAS
+        // Exemple avec un client Supabase (ajustez le nom de votre table et les colonnes) :
+        // const { data, error } = await supabase
+        //   .from('your_meals_table') // Remplacez 'your_meals_table' par le nom de votre table de repas
+        //   .select('*') // Sélectionnez les colonnes dont vous avez besoin
+        //   .order('created_at', { ascending: false }) // Triez par date de création, plus récents en premier
+        //   .limit(5); // Limitez au nombre de repas récents que vous voulez afficher
+
+        // if (error) {
+        //   throw error;
+        // }
+        // setRecentMeals(data || []);
+
+        // --- SIMULATION POUR LE DÉVELOPPEMENT (À SUPPRIMER APRÈS INTÉGRATION SUPABASE) ---
+        // Simule un chargement asynchrone
+        await new Promise(resolve => setTimeout(resolve, 1000)); 
+        const dummyMeals = [
+            {
+                id: 1,
+                name: "Salade de poulet et avocat",
+                time: "12h30",
+                calories: 450,
+                proteins: 30,
+                carbs: 20,
+                fats: 25,
+                imageUrl: "https://via.placeholder.com/80/FFA500/FFFFFF?text=Repas1" // Exemple d'image
+            },
+            {
+                id: 2,
+                name: "Smoothie aux fruits rouges",
+                time: "08h00",
+                calories: 200,
+                proteins: 5,
+                carbs: 40,
+                fats: 2,
+                imageUrl: "https://via.placeholder.com/80/8B008B/FFFFFF?text=Repas2" // Exemple d'image
+            },
+            // Ajoutez d'autres repas si vous voulez tester
+        ];
+        setRecentMeals(dummyMeals);
+        // --- FIN DE SIMULATION ---
+
+      } catch (error) {
+        console.error("Erreur lors du chargement des repas récents:", error);
+        setErrorMeals("Échec du chargement des repas.");
+        setRecentMeals([]); // Assurez-vous que le tableau est vide en cas d'erreur
+      } finally {
+        setLoadingMeals(false);
+      }
+    };
+
+    fetchRecentMeals();
+  }, []); // Le tableau de dépendances vide signifie que cela s'exécute une seule fois au montage du composant
+
+  // Calcul de la progression quotidienne moyenne (reste inchangé, même si la barre est retirée, la valeur peut être utile ailleurs)
   const averageDailyProgress = Math.round((caloriesProgress + proteinsProgress + carbsProgress + fatsProgress) / 4);
 
   return (
@@ -64,15 +130,13 @@ const Home = () => {
               <p className="text-sm text-muted-foreground">Bonjour Marie Dubois !</p>
             </div>
           </div>
-          {/* This is the part that was removed to eliminate the "Upgrade" section */}
-          {/* If there were other elements (like a settings icon next to "Upgrade"),
-              they would also be removed if they were part of the same div. */}
         </div> 
         
         {/* Calendrier intégré */}
         <WeekCalendar />
         
-        {/* Progression d'aujourd'hui */}
+        {/* LA SECTION SUIVANTE A ÉTÉ SUPPRIMÉE POUR ENLEVER LA BARRE DE PROGRESSION SOUS LE CALENDRIER */}
+        {/*
         <div className="mt-6 p-4 bg-primary/5 rounded-xl border border-primary/20">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
@@ -85,8 +149,10 @@ const Home = () => {
           </div>
           <Progress value={averageDailyProgress} className="h-3 bg-secondary" />
         </div>
+        */}
       </header>
 
+      {/* DÉBUT DU CONTENU PRINCIPAL */}
       <div className="px-4 py-6 relative z-10">
         {/* Progression d'analyse en cours */}
         <AnalysisProgress 
@@ -205,36 +271,58 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Nouvelle section "Repas récent" */}
-        <div className="mb-8">
+        {/* --- SECTION "REPAS RÉCENTS" DYNAMIQUE --- */}
+        <div className="mb-8"> 
             <h2 className="text-xl font-bold text-foreground mb-4">Repas récents</h2>
-            <div className="space-y-4">
-                {/* Exemple de carte de repas 1 */}
-                <div className="glass-card rounded-2xl p-4 shadow-card hover:shadow-elevated transition-all duration-300 flex items-center gap-4">
-                    <img src="https://via.placeholder.com/80" alt="Repas" className="w-16 h-16 rounded-lg object-cover" />
-                    <div className="flex-1">
-                        <p className="font-bold text-foreground">Salade de poulet et avocat</p>
-                        <p className="text-sm text-muted-foreground">12h30 - 450 Kcal</p>
-                        <p className="text-xs text-muted-foreground">Protéines: 30g, Glucides: 20g, Lipides: 25g</p>
-                    </div>
+            {loadingMeals ? (
+                <p className="text-muted-foreground text-center">Chargement des repas...</p>
+            ) : errorMeals ? (
+                <p className="text-destructive text-center">{errorMeals}</p>
+            ) : recentMeals.length > 0 ? (
+                <div className="space-y-4">
+                    {recentMeals.map((meal) => (
+                        <div key={meal.id} className="glass-card rounded-2xl p-4 shadow-card hover:shadow-elevated transition-all duration-300 flex items-center gap-4">
+                            <img 
+                                src={meal.imageUrl || "https://via.placeholder.com/80"} // Utilisez l'URL de votre image ou un placeholder
+                                alt={meal.name} 
+                                className="w-16 h-16 rounded-lg object-cover" 
+                            />
+                            <div className="flex-1">
+                                <p className="font-bold text-foreground">{meal.name}</p>
+                                <p className="text-sm text-muted-foreground">{meal.time} - {meal.calories} Kcal</p>
+                                <p className="text-xs text-muted-foreground">
+                                    Protéines: {meal.proteins}g, Glucides: {meal.carbs}g, Lipides: {meal.fats}g
+                                </p>
+                            </div>
+                        </div>
+                    ))}
                 </div>
-
-                {/* Exemple de carte de repas 2 */}
-                <div className="glass-card rounded-2xl p-4 shadow-card hover:shadow-elevated transition-all duration-300 flex items-center gap-4">
-                    <img src="https://via.placeholder.com/80" alt="Repas" className="w-16 h-16 rounded-lg object-cover" />
-                    <div className="flex-1">
-                        <p className="font-bold text-foreground">Smoothie aux fruits rouges</p>
-                        <p className="text-sm text-muted-foreground">08h00 - 200 Kcal</p>
-                        <p className="text-xs text-muted-foreground">Protéines: 5g, Glucides: 40g, Lipides: 2g</p>
+            ) : (
+                <div className="glass-card rounded-3xl p-8 shadow-elevated relative overflow-hidden">
+                  <div className="absolute bottom-0 left-0 w-40 h-40 bg-primary/10 rounded-full blur-3xl"></div>
+                  
+                  <div className="relative text-center">
+                    <div className="mb-6">
+                      <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+                        <Target className="w-8 h-8 text-primary" />
+                      </div>
+                      <h3 className="text-xl font-bold text-foreground mb-2">Aucun repas récent</h3>
+                      <p className="text-muted-foreground">
+                        Ajoutez votre premier repas pour le voir apparaître ici.
+                      </p>
                     </div>
+                  </div>
                 </div>
-
-                {/* Ajoutez plus de cartes de repas ici si nécessaire */}
-            </div>
+            )}
         </div>
+        {/* --- FIN DE LA SECTION "REPAS RÉCENTS" DYNAMIQUE --- */}
 
 
-        {/* Section Repas avec CTA premium (celle qui dit "Vous n'avez ajouté aucun aliment") */}
+        {/* Section Repas avec CTA premium (celle qui dit "Vous n'avez ajouté aucun aliment") 
+            Cette section peut être déplacée si elle n'est plus nécessaire après l'implémentation
+            de la section "Repas récents" dynamique. Pour l'instant, je la garde.
+            Elle peut servir de CTA si recentMeals.length === 0.
+        */}
         <div className="glass-card rounded-3xl p-8 shadow-elevated relative overflow-hidden">
           <div className="absolute bottom-0 left-0 w-40 h-40 bg-primary/10 rounded-full blur-3xl"></div>
           
@@ -257,6 +345,7 @@ const Home = () => {
           </div>
         </div>
       </div>
+      {/* FIN DU CONTENU PRINCIPAL */}
 
       <FloatingAddButton />
       <Navigation />
@@ -265,4 +354,4 @@ const Home = () => {
 };
 
 export default Home;
-  
+    
