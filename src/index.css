@@ -2,58 +2,69 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Design system pour Prot AI - Application de tracking nutritionnelle française
+/* Design system pour Prot AI - Premium moderne et unique
 All colors MUST be HSL.
 */
 
 @layer base {
   :root {
-    --background: 240 20% 98%;
-    --foreground: 240 10% 3.9%;
+    /* Couleurs de base premium */
+    --background: 240 5% 3%;
+    --foreground: 0 0% 98%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 240 10% 3.9%;
+    --card: 240 5% 6%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 240 10% 3.9%;
+    --popover: 240 5% 6%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 240 100% 20%;
-    --primary-foreground: 0 0% 98%;
+    --primary: 24 88% 58%;
+    --primary-foreground: 0 0% 0%;
 
-    --secondary: 240 4.8% 95.9%;
-    --secondary-foreground: 240 5.9% 10%;
+    --secondary: 240 4% 15%;
+    --secondary-foreground: 0 0% 98%;
 
-    --muted: 240 4.8% 95.9%;
-    --muted-foreground: 240 3.8% 45%;
+    --muted: 240 4% 10%;
+    --muted-foreground: 240 5% 64%;
 
-    --accent: 240 4.8% 95.9%;
-    --accent-foreground: 240 5.9% 10%;
+    --accent: 240 4% 15%;
+    --accent-foreground: 0 0% 98%;
 
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 240 5.9% 90%;
-    --input: 240 5.9% 90%;
-    --ring: 240 5% 64.9%;
+    --border: 240 4% 12%;
+    --input: 240 4% 12%;
+    --ring: 24 88% 58%;
     
-    /* Couleurs personnalisées pour Prot AI */
-    --protein-color: 14 100% 65%;
-    --carbs-color: 35 100% 65%;
-    --fats-color: 220 100% 65%;
-    --calories-color: 240 100% 20%;
+    /* Couleurs premium Prot AI */
+    --protein-color: 335 78% 62%;
+    --carbs-color: 175 70% 41%;
+    --fats-color: 48 96% 53%;
+    --calories-color: 24 88% 58%;
     
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(240 100% 20%), hsl(260 100% 30%));
-    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(240 20% 98%));
+    /* Couleurs supplémentaires */
+    --success: 142 76% 36%;
+    --warning: 38 92% 50%;
+    --info: 199 89% 48%;
     
-    /* Ombres */
-    --shadow-card: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 1px 2px 0 hsl(0 0% 0% / 0.06);
-    --shadow-elevated: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.06);
+    /* Gradients premium */
+    --gradient-primary: linear-gradient(135deg, hsl(24 88% 58%), hsl(38 92% 50%));
+    --gradient-card: linear-gradient(135deg, hsl(240 5% 6%), hsl(240 4% 8%));
+    --gradient-hero: linear-gradient(135deg, hsl(24 88% 58%) 0%, hsl(335 78% 62%) 50%, hsl(175 70% 41%) 100%);
+    --gradient-glass: linear-gradient(135deg, hsl(240 5% 8% / 0.8), hsl(240 4% 10% / 0.6));
     
-    /* Transitions */
-    --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    /* Ombres premium */
+    --shadow-card: 0 4px 25px -2px hsl(0 0% 0% / 0.3), 0 2px 10px -2px hsl(0 0% 0% / 0.2);
+    --shadow-elevated: 0 10px 40px -8px hsl(0 0% 0% / 0.4), 0 4px 20px -4px hsl(0 0% 0% / 0.3);
+    --shadow-glow: 0 0 30px hsl(24 88% 58% / 0.3);
+    --shadow-inner: inset 0 2px 4px 0 hsl(0 0% 0% / 0.06);
+    
+    /* Transitions fluides */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-spring: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 
-    --radius: 0.5rem;
+    --radius: 1rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -72,41 +83,46 @@ All colors MUST be HSL.
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
-  .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+  .light {
+    /* Mode clair premium */
+    --background: 0 0% 98%;
+    --foreground: 240 10% 3.9%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 24 88% 58%;
+    --primary-foreground: 0 0% 98%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 240 4.8% 95.9%;
+    --secondary-foreground: 240 5.9% 10%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 45%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 240 4.8% 95.9%;
+    --accent-foreground: 240 5.9% 10%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 24 88% 58%;
+    
+    /* Gradients mode clair */
+    --gradient-card: linear-gradient(135deg, hsl(0 0% 100%), hsl(240 20% 98%));
+    --shadow-card: 0 1px 3px 0 hsl(0 0% 0% / 0.1), 0 1px 2px 0 hsl(0 0% 0% / 0.06);
+    --shadow-elevated: 0 4px 6px -1px hsl(0 0% 0% / 0.1), 0 2px 4px -1px hsl(0 0% 0% / 0.06);
+    --shadow-glow: 0 0 30px hsl(24 88% 58% / 0.2);
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
@@ -117,6 +133,29 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans antialiased;
   }
+  
+  /* Effet de verre pour les cartes premium */
+  .glass-card {
+    background: var(--gradient-glass);
+    backdrop-filter: blur(20px);
+    border: 1px solid hsl(var(--border) / 0.3);
+  }
+  
+  /* Animations fluides */
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+  
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  /* Progress bars personnalisées */
+  .progress-protein { background: linear-gradient(90deg, hsl(var(--protein-color)), hsl(var(--protein-color) / 0.8)); }
+  .progress-carbs { background: linear-gradient(90deg, hsl(var(--carbs-color)), hsl(var(--carbs-color) / 0.8)); }
+  .progress-fats { background: linear-gradient(90deg, hsl(var(--fats-color)), hsl(var(--fats-color) / 0.8)); }
+  .progress-calories { background: linear-gradient(90deg, hsl(var(--calories-color)), hsl(var(--calories-color) / 0.8)); }
 }

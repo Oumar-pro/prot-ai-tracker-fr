@@ -1,83 +1,214 @@
-import { Apple, Flame, Zap, Wheat, Droplets } from "lucide-react";
+import { Apple, Flame, Zap, Wheat, Droplets, Target, User, Calendar } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import WeekCalendar from "@/components/WeekCalendar";
 import MacroCard from "@/components/MacroCard";
 import FloatingAddButton from "@/components/FloatingAddButton";
 import { useTodayMacros } from "@/hooks/useFoodAnalyses";
+import { Progress } from "@/components/ui/progress";
 
 const Home = () => {
   const { data: macros } = useTodayMacros();
+  
+  // Objectifs journaliers
+  const dailyGoals = {
+    calories: 2100,
+    proteins: 120,
+    carbs: 250,
+    fats: 70
+  };
+  
+  // Calculs des progressions
+  const caloriesProgress = Math.min((macros?.calories || 0) / dailyGoals.calories * 100, 100);
+  const proteinsProgress = Math.min((macros?.proteins || 0) / dailyGoals.proteins * 100, 100);
+  const carbsProgress = Math.min((macros?.carbs || 0) / dailyGoals.carbs * 100, 100);
+  const fatsProgress = Math.min((macros?.fats || 0) / dailyGoals.fats * 100, 100);
+  
+  // Calcul de la progression quotidienne moyenne
+  const averageDailyProgress = Math.round((caloriesProgress + proteinsProgress + carbsProgress + fatsProgress) / 4);
+
   return (
-    <div className="min-h-screen bg-background pb-20">
-      {/* Header */}
-      <header className="flex items-center justify-between px-4 py-4 bg-card">
-        <div className="flex items-center gap-2">
-          <Apple className="w-8 h-8 text-primary" />
-          <h1 className="text-xl font-bold text-foreground">Prot AI</h1>
+    <div className="min-h-screen bg-background pb-20 relative overflow-hidden">
+      {/* Arrière-plan avec gradient animé */}
+      <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted/20 animate-float" />
+      
+      {/* Header Premium avec effet de verre */}
+      <header className="relative z-10 glass-card mx-4 mt-4 rounded-2xl p-6 shadow-elevated">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-primary/20 rounded-xl backdrop-blur-sm">
+              <Apple className="w-8 h-8 text-primary" />
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+                Prot AI
+              </h1>
+              <p className="text-sm text-muted-foreground">Bonjour Marie Dubois !</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="text-right">
+              <p className="text-sm text-muted-foreground">Consommation journalière</p>
+              <div className="flex items-center gap-2">
+                <Flame className="w-5 h-5 text-primary" />
+                <span className="text-lg font-bold text-foreground">{macros?.calories || 0}</span>
+              </div>
+            </div>
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <span className="text-lg font-bold text-primary">{averageDailyProgress}%</span>
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-1 bg-muted px-3 py-1 rounded-full">
-          <Flame className="w-4 h-4 text-orange-500" />
-          <span className="text-sm font-medium">{macros?.calories || 0}</span>
+        
+        {/* Calendrier intégré */}
+        <WeekCalendar />
+        
+        {/* Progression d'aujourd'hui */}
+        <div className="mt-6 p-4 bg-primary/5 rounded-xl border border-primary/20">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
+              <span className="text-sm font-medium text-foreground">Votre Progression d'Aujourd'hui</span>
+            </div>
+            <div className="flex items-center gap-2 px-3 py-1 bg-primary/10 rounded-full">
+              <span className="text-2xl font-bold text-primary">{averageDailyProgress}%</span>
+            </div>
+          </div>
+          <Progress value={averageDailyProgress} className="h-3 bg-secondary" />
         </div>
       </header>
 
-      <div className="px-4 py-6">
-        <WeekCalendar />
-        
-        {/* Calories principales */}
-        <div className="mb-6">
-          <div className="bg-card rounded-xl p-6 shadow-sm border border-border">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-4xl font-bold text-foreground">
-                {Math.max(2100 - (macros?.calories || 0), 0)}
-              </h2>
-              <div className="w-16 h-16 rounded-full border-4 border-muted flex items-center justify-center">
-                <Flame className="w-6 h-6 text-calories" />
+      <div className="px-4 py-6 relative z-10">
+        {/* Section Calories principales avec design premium */}
+        <div className="mb-8">
+          <div className="glass-card rounded-3xl p-8 shadow-elevated relative overflow-hidden">
+            {/* Effet de lumière en arrière-plan */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-3xl"></div>
+            
+            <div className="relative">
+              <div className="flex items-start justify-between mb-6">
+                <div>
+                  <h2 className="text-5xl font-bold text-foreground mb-2">
+                    {Math.max(dailyGoals.calories - (macros?.calories || 0), 0)}
+                  </h2>
+                  <p className="text-lg text-muted-foreground mb-1">Calories restantes</p>
+                  <p className="text-sm text-muted-foreground">
+                    Objectif : {dailyGoals.calories} Kcal
+                  </p>
+                </div>
+                <div className="flex flex-col items-center">
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center mb-2 shadow-glow">
+                    <Flame className="w-8 h-8 text-primary" />
+                  </div>
+                  <div className="text-center">
+                    <p className="text-2xl font-bold text-foreground">{macros?.calories || 0}</p>
+                    <p className="text-xs text-muted-foreground">consommées</p>
+                  </div>
+                </div>
               </div>
-            </div>
-            <p className="text-muted-foreground">Calories restantes</p>
-            <div className="mt-2 text-sm text-muted-foreground">
-              {macros?.calories || 0} / 2100 consommées
+              
+              {/* Barre de progression principale */}
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Progression</span>
+                  <span className="text-primary font-medium">{Math.round(caloriesProgress)}%</span>
+                </div>
+                <div className="h-2 bg-secondary rounded-full overflow-hidden">
+                  <div 
+                    className="h-full progress-calories rounded-full transition-all duration-1000 ease-out"
+                    style={{ width: `${caloriesProgress}%` }}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Macronutriments */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
-          <MacroCard
-            icon={<Zap className="w-4 h-4 text-white" />}
-            label="Protéines"
-            value={Math.max(120 - Math.round(macros?.proteins || 0), 0).toString()}
-            unit="g restantes"
-            color="bg-protein"
-            progress={Math.min((macros?.proteins || 0) / 120 * 100, 100)}
-          />
-          <MacroCard
-            icon={<Wheat className="w-4 h-4 text-white" />}
-            label="Glucides"
-            value={Math.max(250 - Math.round(macros?.carbs || 0), 0).toString()}
-            unit="g restantes"
-            color="bg-carbs"
-            progress={Math.min((macros?.carbs || 0) / 250 * 100, 100)}
-          />
-          <MacroCard
-            icon={<Droplets className="w-4 h-4 text-white" />}
-            label="Lipides"
-            value={Math.max(70 - Math.round(macros?.fats || 0), 0).toString()}
-            unit="g restantes"
-            color="bg-fats"
-            progress={Math.min((macros?.fats || 0) / 70 * 100, 100)}
-          />
+        {/* Macronutriments avec design moderne */}
+        <div className="grid grid-cols-3 gap-4 mb-8">
+          <div className="glass-card rounded-2xl p-4 shadow-card hover:shadow-elevated transition-all duration-300">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-8 h-8 rounded-lg bg-protein/20 flex items-center justify-center">
+                <Zap className="w-4 h-4 text-white" />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs text-muted-foreground">Protéines</p>
+                <p className="text-lg font-bold text-foreground">{Math.round(macros?.proteins || 0)}g</p>
+              </div>
+            </div>
+            <div className="space-y-1">
+              <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
+                <div 
+                  className="h-full progress-protein rounded-full transition-all duration-1000 ease-out"
+                  style={{ width: `${proteinsProgress}%` }}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">{Math.max(dailyGoals.proteins - Math.round(macros?.proteins || 0), 0)}g restantes</p>
+            </div>
+          </div>
+          
+          <div className="glass-card rounded-2xl p-4 shadow-card hover:shadow-elevated transition-all duration-300">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-8 h-8 rounded-lg bg-carbs/20 flex items-center justify-center">
+                <Wheat className="w-4 h-4 text-white" />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs text-muted-foreground">Glucides</p>
+                <p className="text-lg font-bold text-foreground">{Math.round(macros?.carbs || 0)}g</p>
+              </div>
+            </div>
+            <div className="space-y-1">
+              <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
+                <div 
+                  className="h-full progress-carbs rounded-full transition-all duration-1000 ease-out"
+                  style={{ width: `${carbsProgress}%` }}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">{Math.max(dailyGoals.carbs - Math.round(macros?.carbs || 0), 0)}g restantes</p>
+            </div>
+          </div>
+          
+          <div className="glass-card rounded-2xl p-4 shadow-card hover:shadow-elevated transition-all duration-300">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-8 h-8 rounded-lg bg-fats/20 flex items-center justify-center">
+                <Droplets className="w-4 h-4 text-white" />
+              </div>
+              <div className="flex-1">
+                <p className="text-xs text-muted-foreground">Lipides</p>
+                <p className="text-lg font-bold text-foreground">{Math.round(macros?.fats || 0)}g</p>
+              </div>
+            </div>
+            <div className="space-y-1">
+              <div className="h-1.5 bg-secondary rounded-full overflow-hidden">
+                <div 
+                  className="h-full progress-fats rounded-full transition-all duration-1000 ease-out"
+                  style={{ width: `${fatsProgress}%` }}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground">{Math.max(dailyGoals.fats - Math.round(macros?.fats || 0), 0)}g restantes</p>
+            </div>
+          </div>
         </div>
 
-        {/* Repas récents */}
-        <div className="bg-card rounded-xl p-6 shadow-sm border border-border">
-          <h3 className="text-lg font-semibold mb-4">Repas récents</h3>
-          <div className="text-center py-8">
-            <p className="text-muted-foreground mb-2">Vous n'avez ajouté aucun aliment</p>
-            <p className="text-sm text-muted-foreground">
-              Commencez à suivre vos repas d'aujourd'hui en prenant des photos rapides
-            </p>
+        {/* Section Repas avec CTA premium */}
+        <div className="glass-card rounded-3xl p-8 shadow-elevated relative overflow-hidden">
+          <div className="absolute bottom-0 left-0 w-40 h-40 bg-primary/10 rounded-full blur-3xl"></div>
+          
+          <div className="relative text-center">
+            <div className="mb-6">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+                <Target className="w-8 h-8 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold text-foreground mb-2">Vous n'avez ajouté aucun aliment</h3>
+              <p className="text-muted-foreground">
+                Commencez à suivre vos repas d'aujourd'hui en prenant des photos rapides
+              </p>
+            </div>
+            
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground mb-6">
+                Appuyez sur le + pour analyser.
+              </p>
+            </div>
           </div>
         </div>
       </div>

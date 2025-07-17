@@ -23,9 +23,10 @@ const FloatingAddButton = () => {
     <>
       <button
         onClick={handleAddFood}
-        className="fixed bottom-20 right-6 w-14 h-14 bg-primary text-primary-foreground rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 flex items-center justify-center z-40"
+        className="fixed bottom-24 right-6 w-16 h-16 bg-gradient-to-br from-primary to-primary/80 text-primary-foreground rounded-full shadow-glow hover:shadow-elevated transition-all duration-300 hover:scale-110 flex items-center justify-center z-40 border-2 border-primary/20 backdrop-blur-sm animate-float"
+        style={{ boxShadow: '0 0 30px hsl(var(--primary) / 0.4), 0 8px 25px hsl(0 0% 0% / 0.3)' }}
       >
-        <Plus className="w-6 h-6" />
+        <Plus className="w-7 h-7" />
       </button>
       
       <CameraScanner 
