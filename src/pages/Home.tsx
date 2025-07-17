@@ -64,19 +64,6 @@ const Home = () => {
               <p className="text-sm text-muted-foreground">Bonjour Marie Dubois !</p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <div className="text-right">
-              <p className="text-sm text-muted-foreground">Consommation journalière</p>
-              <div className="flex items-center gap-2">
-                <Flame className="w-5 h-5 text-primary" />
-                <span className="text-lg font-bold text-foreground">{macros?.calories || 0}</span>
-              </div>
-            </div>
-            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <span className="text-lg font-bold text-primary">{averageDailyProgress}%</span>
-            </div>
-          </div>
-        </div>
         
         {/* Calendrier intégré */}
         <WeekCalendar />
