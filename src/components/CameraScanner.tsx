@@ -30,9 +30,10 @@ interface CameraScannerProps {
   isOpen: boolean;
   onClose: () => void;
   onFoodAnalyzed: (result: FoodAnalysisResult) => void;
+  onAnalysisStarted: () => void; // Nouvelle callback pour démarrer l'analyse
 }
 
-const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, onFoodAnalyzed }) => {
+const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, onFoodAnalyzed, onAnalysisStarted }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [stream, setStream] = useState<MediaStream | null>(null);
@@ -57,23 +58,39 @@ const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, onFoodAn
   const startCamera = async () => {
     try {
       setIsLoading(true);
+      console.log('Demande d\'accès à la caméra...');
+      
+      // Vérifier si getUserMedia est disponible
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('getUserMedia n\'est pas supporté par ce navigateur');
+      }
+      
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         video: { 
-          facingMode: "environment",
-          width: { ideal: 1920 },
-          height: { ideal: 1080 }
-        }
+          facingMode: { ideal: "environment" },
+          width: { min: 640, ideal: 1280, max: 1920 },
+          height: { min: 480, ideal: 720, max: 1080 }
+        },
+        audio: false
       });
+      
+      console.log('Flux caméra obtenu:', mediaStream);
       
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream;
+        console.log('Flux assigné au video element');
         setStream(mediaStream);
+        
+        // Attendre que la vidéo soit prête
+        videoRef.current.onloadedmetadata = () => {
+          console.log('Vidéo prête, dimensions:', videoRef.current?.videoWidth, 'x', videoRef.current?.videoHeight);
+        };
       }
     } catch (error) {
       console.error("Erreur d'accès à la caméra:", error);
       toast({
         title: "Erreur caméra",
-        description: "Impossible d'accéder à la caméra. Vérifiez les permissions.",
+        description: `Impossible d'accéder à la caméra: ${error instanceof Error ? error.message : 'Vérifiez les permissions'}`,
         variant: "destructive",
       });
     } finally {
@@ -131,22 +148,32 @@ const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, onFoodAn
 
       if (error) {
         console.error('Edge function error:', error);
+        window.dispatchEvent(new CustomEvent('analysisCompleted'));
         throw new Error(error.message || 'Analysis failed');
       }
 
       if (data?.error) {
+        window.dispatchEvent(new CustomEvent('analysisCompleted'));
         throw new Error(data.error);
       }
 
       console.log('Analysis completed:', data);
-      setAnalysisResult(data);
+      
+      // Notifier la fin de l'analyse
+      window.dispatchEvent(new CustomEvent('analysisCompleted'));
+      
+      // Appeler la callback seulement si on a un résultat valide
+      if (data && onFoodAnalyzed) {
+        onFoodAnalyzed(data);
+      }
       
       toast({
         title: "Analyse terminée !",
-        description: `${data.name} analysé avec succès`,
+        description: `${data?.name || 'Aliment'} analysé avec succès`,
       });
     } catch (error) {
       console.error("Erreur lors de l'analyse:", error);
+      window.dispatchEvent(new CustomEvent('analysisCompleted'));
       toast({
         title: "Erreur d'analyse",
         description: error instanceof Error ? error.message : "Impossible d'analyser l'image",
@@ -169,8 +196,14 @@ const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, onFoodAn
       if (ctx) {
         ctx.drawImage(video, 0, 0);
         
-        // Convertir l'image en base64 et analyser
+        // Convertir l'image en base64
         const imageBase64 = convertCanvasToBase64(canvas);
+        
+        // Fermer la caméra et rediriger immédiatement
+        onAnalysisStarted();
+        onClose();
+        
+        // Démarrer l'analyse en arrière-plan
         analyzeFood(imageBase64);
       }
     }
@@ -197,6 +230,12 @@ const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, onFoodAn
               if (ctx) {
                 ctx.drawImage(img, 0, 0);
                 const imageBase64 = convertCanvasToBase64(canvas);
+                
+                // Fermer la caméra et rediriger immédiatement
+                onAnalysisStarted();
+                onClose();
+                
+                // Démarrer l'analyse en arrière-plan
                 analyzeFood(imageBase64);
               }
             }

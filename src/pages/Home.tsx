@@ -3,11 +3,14 @@ import Navigation from "@/components/Navigation";
 import WeekCalendar from "@/components/WeekCalendar";
 import MacroCard from "@/components/MacroCard";
 import FloatingAddButton from "@/components/FloatingAddButton";
+import AnalysisProgress from "@/components/AnalysisProgress";
 import { useTodayMacros } from "@/hooks/useFoodAnalyses";
 import { Progress } from "@/components/ui/progress";
+import { useState, useEffect } from "react";
 
 const Home = () => {
   const { data: macros } = useTodayMacros();
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   
   // Objectifs journaliers
   const dailyGoals = {
@@ -23,6 +26,22 @@ const Home = () => {
   const carbsProgress = Math.min((macros?.carbs || 0) / dailyGoals.carbs * 100, 100);
   const fatsProgress = Math.min((macros?.fats || 0) / dailyGoals.fats * 100, 100);
   
+  
+  // Écouter les événements d'analyse depuis le FloatingAddButton
+  useEffect(() => {
+    const handleAnalysisStart = () => setIsAnalyzing(true);
+    const handleAnalysisComplete = () => setIsAnalyzing(false);
+    
+    // Custom events pour communication entre composants
+    window.addEventListener('analysisStarted', handleAnalysisStart);
+    window.addEventListener('analysisCompleted', handleAnalysisComplete);
+    
+    return () => {
+      window.removeEventListener('analysisStarted', handleAnalysisStart);
+      window.removeEventListener('analysisCompleted', handleAnalysisComplete);
+    };
+  }, []);
+
   // Calcul de la progression quotidienne moyenne
   const averageDailyProgress = Math.round((caloriesProgress + proteinsProgress + carbsProgress + fatsProgress) / 4);
 
@@ -78,6 +97,12 @@ const Home = () => {
       </header>
 
       <div className="px-4 py-6 relative z-10">
+        {/* Progression d'analyse en cours */}
+        <AnalysisProgress 
+          isAnalyzing={isAnalyzing} 
+          onComplete={() => setIsAnalyzing(false)} 
+        />
+
         {/* Section Calories principales avec design premium */}
         <div className="mb-8">
           <div className="glass-card rounded-3xl p-8 shadow-elevated relative overflow-hidden">
