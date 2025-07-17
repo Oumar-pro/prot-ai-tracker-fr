@@ -1,7 +1,7 @@
 import { Apple, Flame, Zap, Wheat, Droplets, Target, User, Calendar } from "lucide-react";
 import Navigation from "@/components/Navigation";
 import WeekCalendar from "@/components/WeekCalendar";
-import MacroCard from "@/components/MacroCard";
+import MacroCard from "@/components/MacroCard"; // Non utilisé, peut être retiré si vous ne l'utilisez pas ailleurs.
 import FloatingAddButton from "@/components/FloatingAddButton";
 import AnalysisProgress from "@/components/AnalysisProgress";
 import { useTodayMacros } from "@/hooks/useFoodAnalyses";
@@ -64,6 +64,9 @@ const Home = () => {
               <p className="text-sm text-muted-foreground">Bonjour Marie Dubois !</p>
             </div>
           </div>
+          {/* This is the part that was removed to eliminate the "Upgrade" section */}
+          {/* If there were other elements (like a settings icon next to "Upgrade"),
+              they would also be removed if they were part of the same div. */}
         </div> 
         
         {/* Calendrier intégré */}
@@ -202,7 +205,36 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Section Repas avec CTA premium */}
+        {/* Nouvelle section "Repas récent" */}
+        <div className="mb-8">
+            <h2 className="text-xl font-bold text-foreground mb-4">Repas récents</h2>
+            <div className="space-y-4">
+                {/* Exemple de carte de repas 1 */}
+                <div className="glass-card rounded-2xl p-4 shadow-card hover:shadow-elevated transition-all duration-300 flex items-center gap-4">
+                    <img src="https://via.placeholder.com/80" alt="Repas" className="w-16 h-16 rounded-lg object-cover" />
+                    <div className="flex-1">
+                        <p className="font-bold text-foreground">Salade de poulet et avocat</p>
+                        <p className="text-sm text-muted-foreground">12h30 - 450 Kcal</p>
+                        <p className="text-xs text-muted-foreground">Protéines: 30g, Glucides: 20g, Lipides: 25g</p>
+                    </div>
+                </div>
+
+                {/* Exemple de carte de repas 2 */}
+                <div className="glass-card rounded-2xl p-4 shadow-card hover:shadow-elevated transition-all duration-300 flex items-center gap-4">
+                    <img src="https://via.placeholder.com/80" alt="Repas" className="w-16 h-16 rounded-lg object-cover" />
+                    <div className="flex-1">
+                        <p className="font-bold text-foreground">Smoothie aux fruits rouges</p>
+                        <p className="text-sm text-muted-foreground">08h00 - 200 Kcal</p>
+                        <p className="text-xs text-muted-foreground">Protéines: 5g, Glucides: 40g, Lipides: 2g</p>
+                    </div>
+                </div>
+
+                {/* Ajoutez plus de cartes de repas ici si nécessaire */}
+            </div>
+        </div>
+
+
+        {/* Section Repas avec CTA premium (celle qui dit "Vous n'avez ajouté aucun aliment") */}
         <div className="glass-card rounded-3xl p-8 shadow-elevated relative overflow-hidden">
           <div className="absolute bottom-0 left-0 w-40 h-40 bg-primary/10 rounded-full blur-3xl"></div>
           
@@ -233,3 +265,4 @@ const Home = () => {
 };
 
 export default Home;
+  
