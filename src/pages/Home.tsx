@@ -8,8 +8,7 @@ import { useTodayMacros } from "@/hooks/useFoodAnalyses";
 // import { Progress } from "@/components/ui/progress";
 import { useState, useEffect } from "react";
 
-// IMPORTEZ VOTRE CLIENT SUPABASE ICI
-import { supabase } from '@/lib/supabaseClient'; // Assurez-vous que ce chemin est correct !
+import { supabase } from "@/integrations/supabase/client";
 
 const Home = () => {
   const { data: macros } = useTodayMacros();
@@ -39,12 +38,11 @@ const Home = () => {
     setLoadingMeals(true);
     setErrorMeals(null);
     try {
-      // --- VOTRE LOGIQUE SUPABASE RÉELLE ---
       const { data, error } = await supabase
-        .from('your_meals_table') // <<<< TRÈS IMPORTANT : REMPLACEZ PAR LE NOM DE VOTRE TABLE DE REPAS !
-        .select('id, name, calories, proteins, carbs, fats, created_at, image_url') // <<<< AJUSTEZ CES COLONNES !
+        .from('food_analyses')
+        .select('id, name, calories, proteins, carbs, fats, created_at, image_url')
         .order('created_at', { ascending: false }) 
-        .limit(5); 
+        .limit(5);
 
       if (error) {
         throw error;
@@ -119,10 +117,6 @@ const Home = () => {
       </header>
 
       <div className="px-4 py-6 relative z-10">
-        <AnalysisProgress 
-          isAnalyzing={isAnalyzing} 
-          onComplete={() => setIsAnalyzing(false)} 
-        />
 
         {/* Section Calories principales */}
         <div className="mb-8">
@@ -233,9 +227,18 @@ const Home = () => {
           </div>
         </div>
 
-        {/* --- SECTION "REPAS RÉCENTS" DYNAMIQUE ET MESSAGE "AUCUN REPAS" UNIFIÉ --- */}
+        {/* --- SECTION "REPAS RÉCENTS" AVEC PROGRESSION D'ANALYSE --- */}
         <div className="mb-8"> 
             <h2 className="text-xl font-bold text-foreground mb-4">Repas récents</h2>
+            
+            {/* Afficher la progression d'analyse dans cette section */}
+            {isAnalyzing && (
+              <AnalysisProgress 
+                isAnalyzing={isAnalyzing} 
+                onComplete={() => setIsAnalyzing(false)} 
+              />
+            )}
+            
             {loadingMeals ? (
                 <p className="text-muted-foreground text-center">Chargement des repas...</p>
             ) : errorMeals ? (
@@ -260,27 +263,29 @@ const Home = () => {
                     ))}
                 </div>
             ) : (
-                // Ceci est la carte "Aucun repas récent" / "Vous n'avez ajouté aucun aliment"
-                <div className="glass-card rounded-3xl p-8 shadow-elevated relative overflow-hidden">
-                  <div className="absolute bottom-0 left-0 w-40 h-40 bg-primary/10 rounded-full blur-3xl"></div>
-                  
-                  <div className="relative text-center">
-                    <div className="mb-6">
-                      <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
-                        <Target className="w-8 h-8 text-primary" />
+                !isAnalyzing && (
+                  // Ceci est la carte "Aucun repas récent" / "Vous n'avez ajouté aucun aliment"
+                  <div className="glass-card rounded-3xl p-8 shadow-elevated relative overflow-hidden">
+                    <div className="absolute bottom-0 left-0 w-40 h-40 bg-primary/10 rounded-full blur-3xl"></div>
+                    
+                    <div className="relative text-center">
+                      <div className="mb-6">
+                        <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+                          <Target className="w-8 h-8 text-primary" />
+                        </div>
+                        <h3 className="text-xl font-bold text-foreground mb-2">Vous n'avez ajouté aucun aliment</h3>
+                        <p className="text-muted-foreground">
+                          Commencez à suivre vos repas d'aujourd'hui en prenant des photos rapides
+                        </p>
                       </div>
-                      <h3 className="text-xl font-bold text-foreground mb-2">Vous n'avez ajouté aucun aliment</h3>
-                      <p className="text-muted-foreground">
-                        Commencez à suivre vos repas d'aujourd'hui en prenant des photos rapides
-                      </p>
-                    </div>
-                    <div className="text-center">
-                      <p className="text-sm text-muted-foreground mb-6">
-                        Appuyez sur le + pour analyser.
-                      </p>
+                      <div className="text-center">
+                        <p className="text-sm text-muted-foreground mb-6">
+                          Appuyez sur le + pour analyser.
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )
             )}
         </div>
         {/* --- FIN DE LA SECTION UNIFIÉE --- */}
