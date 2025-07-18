@@ -43,6 +43,17 @@ const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, onFoodAn
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const { toast } = useToast();
 
+  // Authentification anonyme si pas de session
+  useEffect(() => {
+    const initAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        await supabase.auth.signInAnonymously();
+      }
+    };
+    initAuth();
+  }, []);
+
   useEffect(() => {
     if (isOpen) {
       startCamera();
@@ -162,9 +173,9 @@ const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, onFoodAn
       // Notifier la fin de l'analyse
       window.dispatchEvent(new CustomEvent('analysisCompleted'));
       
-      // Appeler la callback seulement si on a un résultat valide
-      if (data && onFoodAnalyzed) {
-        onFoodAnalyzed(data);
+      // Afficher les résultats dans l'écran de résultats
+      if (data) {
+        setAnalysisResult(data);
       }
       
       toast({

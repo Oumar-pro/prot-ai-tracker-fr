@@ -3,16 +3,30 @@ import { ChevronRight, User, Target, Shield, Mail, FileText } from "lucide-react
 import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const Settings = () => {
   const [burnedCalories, setBurnedCalories] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleSettingClick = (setting: string) => {
     toast({
       title: setting,
       description: "Fonctionnalité à venir !",
     });
+  };
+
+  const handleNavigateToTerms = () => {
+    navigate('/terms');
+  };
+
+  const handleNavigateToPrivacy = () => {
+    navigate('/privacy');
+  };
+
+  const handleSupportEmail = () => {
+    window.open('mailto:support@protai.app', '_blank');
   };
 
   return (
@@ -98,7 +112,7 @@ const Settings = () => {
           
           <div className="bg-card rounded-xl shadow-sm border border-border">
             <button
-              onClick={() => handleSettingClick("Conditions générales")}
+              onClick={handleNavigateToTerms}
               className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
             >
               <div className="flex items-center gap-3">
@@ -110,7 +124,7 @@ const Settings = () => {
             
             <div className="border-t border-border">
               <button
-                onClick={() => handleSettingClick("Politique de confidentialité")}
+                onClick={handleNavigateToPrivacy}
                 className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
               >
                 <div className="flex items-center gap-3">
@@ -123,7 +137,7 @@ const Settings = () => {
             
             <div className="border-t border-border">
               <button
-                onClick={() => handleSettingClick("Email de support")}
+                onClick={handleSupportEmail}
                 className="w-full flex items-center justify-between p-4 hover:bg-muted/50 transition-colors"
               >
                 <div className="flex items-center gap-3">

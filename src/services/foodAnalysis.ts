@@ -21,14 +21,11 @@ export interface FoodAnalysisResult {
 }
 
 export const analyzeFoodImage = async (imageBase64: string): Promise<FoodAnalysisResult> => {
-  // !!! IMPORTANT : Assurez-vous que 'YOUR_SUPABASE_EDGE_FUNCTION_URL' est remplacé par l'URL réelle de votre fonction Edge Supabase.
-  // Par exemple : 'https://abcdefghijk.supabase.co/functions/v1/analyze-food'
-  const response = await fetch('YOUR_SUPABASE_EDGE_FUNCTION_URL', {
+  const response = await fetch('https://mythpanxvzvspeynphay.supabase.co/functions/v1/analyze-food', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      // Ajoutez l'en-tête d'autorisation si votre fonction Edge nécessite une clé d'API ou un token JWT :
-      // 'Authorization': `Bearer votre_clé_supabase_anon_si_nécessaire`,
+      'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im15dGhwYW54dnp2c3BleW5waGF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTI2MzcxNDgsImV4cCI6MjA2ODIxMzE0OH0.DxPrl7zbl5BfADaw1fXj0_b1ZiVzIMe2b23i4PPpg0Y`,
     },
     body: JSON.stringify({ imageBase64 }),
   });

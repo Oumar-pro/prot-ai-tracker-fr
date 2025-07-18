@@ -14,6 +14,17 @@ const Home = () => {
   const { data: macros } = useTodayMacros();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   
+  // Authentification anonyme automatique
+  useEffect(() => {
+    const initAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        await supabase.auth.signInAnonymously();
+      }
+    };
+    initAuth();
+  }, []);
+  
   // État pour stocker les repas récents et l'état de chargement
   const [recentMeals, setRecentMeals] = useState([]);
   const [loadingMeals, setLoadingMeals] = useState(true);
