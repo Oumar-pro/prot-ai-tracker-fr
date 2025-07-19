@@ -43,6 +43,13 @@ All colors MUST be HSL.
     --fats-color: 48 96% 53%;
     --calories-color: 24 88% 58%;
     
+    /* Couleurs Onboarding Prot AI */
+    --prot-orange: 24 100% 50%; /* #FF7F00 */
+    --prot-black: 0 0% 11%; /* #1C1C1C */
+    --prot-white: 0 0% 100%; /* #FFFFFF */
+    --prot-light-gray: 0 0% 96%; /* #F5F5F5 */
+    --prot-medium-gray: 0 0% 40%; /* #666666 */
+    
     /* Couleurs supplémentaires */
     --success: 142 76% 36%;
     --warning: 38 92% 50%;
@@ -152,4 +159,13 @@ All colors MUST be HSL.
   .progress-carbs { background: linear-gradient(90deg, hsl(var(--carbs-color)), hsl(var(--carbs-color) / 0.8)); }
   .progress-fats { background: linear-gradient(90deg, hsl(var(--fats-color)), hsl(var(--fats-color) / 0.8)); }
   .progress-calories { background: linear-gradient(90deg, hsl(var(--calories-color)), hsl(var(--calories-color) / 0.8)); }
+  
+  /* Masquer les barres de défilement sur les sélecteurs */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }

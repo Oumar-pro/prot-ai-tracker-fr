@@ -57,6 +57,12 @@ export default {
 				carbs: 'hsl(var(--carbs-color))',
 				fats: 'hsl(var(--fats-color))',
 				calories: 'hsl(var(--calories-color))',
+				// Couleurs Onboarding Prot AI
+				'prot-orange': 'hsl(var(--prot-orange))',
+				'prot-black': 'hsl(var(--prot-black))',
+				'prot-white': 'hsl(var(--prot-white))',
+				'prot-light-gray': 'hsl(var(--prot-light-gray))',
+				'prot-medium-gray': 'hsl(var(--prot-medium-gray))',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',
