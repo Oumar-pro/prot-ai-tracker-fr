@@ -1,14 +1,16 @@
 import Navigation from "@/components/Navigation";
-import { ChevronRight, User, Target, Shield, Mail, FileText } from "lucide-react";
+import { ChevronRight, User, Target, Shield, Mail, FileText, Sun, Moon } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { useTheme } from "next-themes";
 
 const Settings = () => {
   const [burnedCalories, setBurnedCalories] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { theme, setTheme } = useTheme();
 
   const handleSettingClick = (setting: string) => {
     toast({
@@ -92,16 +94,36 @@ const Settings = () => {
         <div className="mb-6">
           <h2 className="text-lg font-semibold mb-4 text-foreground">Préférences</h2>
           
-          <div className="bg-card rounded-xl p-4 shadow-sm border border-border">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-foreground">Calories brûlées</div>
-                <div className="text-sm text-muted-foreground">Ajouter les calories brûlées à l'objectif quotidien</div>
+          <div className="bg-card rounded-xl shadow-sm border border-border">
+            <div className="flex items-center justify-between p-4">
+              <div className="flex items-center gap-3">
+                {theme === 'dark' ? (
+                  <Moon className="w-5 h-5 text-muted-foreground" />
+                ) : (
+                  <Sun className="w-5 h-5 text-muted-foreground" />
+                )}
+                <div>
+                  <div className="text-foreground">Mode sombre</div>
+                  <div className="text-sm text-muted-foreground">Basculer entre thème clair et sombre</div>
+                </div>
               </div>
               <Switch
-                checked={burnedCalories}
-                onCheckedChange={setBurnedCalories}
+                checked={theme === 'dark'}
+                onCheckedChange={(checked) => setTheme(checked ? 'dark' : 'light')}
               />
+            </div>
+            
+            <div className="border-t border-border">
+              <div className="flex items-center justify-between p-4">
+                <div>
+                  <div className="text-foreground">Calories brûlées</div>
+                  <div className="text-sm text-muted-foreground">Ajouter les calories brûlées à l'objectif quotidien</div>
+                </div>
+                <Switch
+                  checked={burnedCalories}
+                  onCheckedChange={setBurnedCalories}
+                />
+              </div>
             </div>
           </div>
         </div>
