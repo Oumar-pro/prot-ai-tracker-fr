@@ -176,7 +176,10 @@ const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, onFoodAn
       // Afficher les résultats dans l'écran de résultats
       if (data && data.name && data.nutritionalInfo) {
         console.log('Setting analysis result:', data);
-        setAnalysisResult(data);
+        // Forcer le re-render en utilisant setTimeout
+        setTimeout(() => {
+          setAnalysisResult(data);
+        }, 100);
         
         toast({
           title: "Analyse terminée !",
@@ -211,7 +214,9 @@ const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, onFoodAn
           confidence: 95
         };
         
-        setAnalysisResult(testResult);
+        setTimeout(() => {
+          setAnalysisResult(testResult);
+        }, 100);
         
         toast({
           title: "Analyse terminée !",
@@ -310,10 +315,11 @@ const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, onFoodAn
     onClose();
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !analysisResult) return null;
 
   // Afficher les résultats d'analyse
   if (analysisResult) {
+    console.log('Rendering FoodAnalysisResults with:', analysisResult);
     return (
       <FoodAnalysisResults
         result={analysisResult}
@@ -322,6 +328,8 @@ const CameraScanner: React.FC<CameraScannerProps> = ({ isOpen, onClose, onFoodAn
       />
     );
   }
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 z-50 bg-black">
