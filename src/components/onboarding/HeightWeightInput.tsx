@@ -42,7 +42,7 @@ const ScrollPicker = ({
       // Défilement initial pour centrer l'élément sélectionné
       containerRef.current.scrollTop = selectedIndex * 60;
     }
-  }, [selectedIndex, containerRef, items.length]); // Dépendance items.length ajoutée
+  }, [selectedIndex, containerRef, items.length]);
 
   return (
     <div 
@@ -51,8 +51,8 @@ const ScrollPicker = ({
       onScroll={handleScroll}
       style={{ scrollSnapType: 'y mandatory' }}
     >
-      {/* Indicateur de sélection - couleur blanche/transparente sur fond sombre */}
-      <div className="absolute inset-x-0 top-[100px] h-[60px] bg-prot-white/10 border-y-2 border-prot-white/20 pointer-events-none z-10 rounded-xl" />
+      {/* Indicateur de sélection - couleur noire/transparente sur fond blanc */}
+      <div className="absolute inset-x-0 top-[100px] h-[60px] bg-prot-black/10 border-y-2 border-prot-black/20 pointer-events-none z-10 rounded-xl" />
       
       {/* Padding top et bottom pour centrer l'élément sélectionné */}
       <div className="h-[100px]" />
@@ -63,7 +63,7 @@ const ScrollPicker = ({
           className={`h-[60px] flex items-center justify-center transition-all duration-200 ${
             index === selectedIndex 
               ? 'text-prot-orange text-3xl font-bold' // Texte orange et plus grand si sélectionné
-              : 'text-prot-white/50 text-xl' // Texte blanc/gris et plus petit si non sélectionné
+              : 'text-prot-black/50 text-xl' // Texte noir/50 et plus petit si non sélectionné (sur fond blanc)
           }`}
           style={{ scrollSnapAlign: 'center' }}
         >
@@ -141,7 +141,7 @@ const HeightWeightInput: React.FC<HeightWeightInputProps> = ({ onNext, onBack, d
       setHeightIn(Math.round(totalInches % 12));
       setWeightLbs(Math.round(weightKg * 2.20462));
     }
-  }, [unit]); // S'exécute lorsque l'unité change
+  }, [unit]);
 
 
   return (
@@ -158,13 +158,14 @@ const HeightWeightInput: React.FC<HeightWeightInputProps> = ({ onNext, onBack, d
 
         <div className="flex-1 flex flex-col justify-center">
           {/* Sélecteur d'unité */}
-          <div className="bg-prot-black rounded-2xl p-2 mb-8 flex shadow-lg">
+          {/* FOND BLANC pour le sélecteur d'unité, avec bordure et shadow */}
+          <div className="bg-prot-white rounded-2xl p-2 mb-8 flex shadow-lg border border-gray-200">
             <button
               onClick={() => setUnit('metric')}
               className={`flex-1 py-3 px-4 rounded-xl font-semibold transition-all duration-200 ${
                 unit === 'metric'
-                  ? 'bg-prot-orange text-prot-black shadow-md'
-                  : 'text-prot-white'
+                  ? 'bg-prot-orange text-prot-black shadow-md' // Sélectionné : Orange, Texte Noir
+                  : 'text-prot-black' // Non sélectionné : Texte NOIR
               }`}
             >
               Métrique
@@ -173,8 +174,8 @@ const HeightWeightInput: React.FC<HeightWeightInputProps> = ({ onNext, onBack, d
               onClick={() => setUnit('imperial')}
               className={`flex-1 py-3 px-4 rounded-xl font-semibold transition-all duration-200 ${
                 unit === 'imperial'
-                  ? 'bg-prot-orange text-prot-black shadow-md'
-                  : 'text-prot-white'
+                  ? 'bg-prot-orange text-prot-black shadow-md' // Sélectionné : Orange, Texte Noir
+                  : 'text-prot-black' // Non sélectionné : Texte NOIR
               }`}
             >
               Impérial
@@ -182,14 +183,15 @@ const HeightWeightInput: React.FC<HeightWeightInputProps> = ({ onNext, onBack, d
           </div>
 
           {/* Sélecteurs de taille et poids */}
-          <div className="grid grid-cols-2 gap-4 mb-12 bg-prot-light-gray rounded-2xl p-4 shadow-lg"> {/* Conteneur gris clair pour les sélecteurs */}
+          {/* Conteneur des sélecteurs : Reste gris clair comme convenu pour les fonds de regroupement */}
+          <div className="grid grid-cols-2 gap-4 mb-12 bg-prot-light-gray rounded-2xl p-4 shadow-lg"> 
             {/* Colonne Gauche (Taille) */}
             <div className="flex flex-col items-center">
               <label className="block text-sm font-medium text-prot-medium-gray mb-2">
                 Taille
               </label> {/* Traduction */}
               {unit === 'metric' ? (
-                <div className="bg-prot-white rounded-xl text-center w-full shadow-sm">
+                <div className="bg-prot-white rounded-xl text-center w-full shadow-sm border border-gray-200"> {/* Bordure ajoutée */}
                   <ScrollPicker
                     items={cmOptions}
                     selectedIndex={cmOptions.indexOf(heightCm)}
@@ -200,7 +202,7 @@ const HeightWeightInput: React.FC<HeightWeightInputProps> = ({ onNext, onBack, d
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-2 w-full">
-                  <div className="bg-prot-white rounded-xl text-center shadow-sm">
+                  <div className="bg-prot-white rounded-xl text-center shadow-sm border border-gray-200"> {/* Bordure ajoutée */}
                     <ScrollPicker
                       items={ftOptions}
                       selectedIndex={ftOptions.indexOf(heightFt)}
@@ -209,7 +211,7 @@ const HeightWeightInput: React.FC<HeightWeightInputProps> = ({ onNext, onBack, d
                       formatter={(item) => `${item} ft`}
                     />
                   </div>
-                  <div className="bg-prot-white rounded-xl text-center shadow-sm">
+                  <div className="bg-prot-white rounded-xl text-center shadow-sm border border-gray-200"> {/* Bordure ajoutée */}
                     <ScrollPicker
                       items={inOptions}
                       selectedIndex={inOptions.indexOf(heightIn)}
@@ -227,14 +229,14 @@ const HeightWeightInput: React.FC<HeightWeightInputProps> = ({ onNext, onBack, d
               <label className="block text-sm font-medium text-prot-medium-gray mb-2">
                 Poids
               </label> {/* Traduction */}
-              <div className="bg-prot-white rounded-xl text-center w-full shadow-sm">
+              <div className="bg-prot-white rounded-xl text-center w-full shadow-sm border border-gray-200"> {/* Bordure ajoutée */}
                 <ScrollPicker
                   items={unit === 'metric' ? kgOptions : lbsOptions}
                   selectedIndex={unit === 'metric' ? kgOptions.indexOf(weightKg) : lbsOptions.indexOf(weightLbs)}
                   onSelect={(index) => 
                     unit === 'metric' ? setWeightKg(kgOptions[index]) : setWeightLbs(lbsOptions[index])
                   }
-                  containerRef={kgRef} // Utilisation de kgRef pour kg et lbs
+                  containerRef={kgRef}
                   formatter={(item) => `${item} ${unit === 'metric' ? 'kg' : 'lb'}`}
                 />
               </div>
@@ -245,7 +247,7 @@ const HeightWeightInput: React.FC<HeightWeightInputProps> = ({ onNext, onBack, d
         {/* Bouton Suivant */}
         <Button
           onClick={handleNext}
-          className="w-full h-14 bg-prot-black hover:bg-prot-black/80 text-prot-white font-semibold text-lg rounded-2xl transition-all duration-200 hover:scale-[1.02] shadow-lg"
+          className="w-full h-14 bg-prot-orange hover:bg-prot-orange/90 text-prot-black font-semibold text-lg rounded-2xl transition-all duration-200 hover:scale-[1.02] shadow-lg"
         >
           Suivant
         </Button> {/* Traduction */}
@@ -255,4 +257,4 @@ const HeightWeightInput: React.FC<HeightWeightInputProps> = ({ onNext, onBack, d
 };
 
 export default HeightWeightInput;
-      
+            
