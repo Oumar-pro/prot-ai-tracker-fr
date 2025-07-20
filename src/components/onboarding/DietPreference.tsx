@@ -1,6 +1,8 @@
+// src/components/onboarding/DietPreference.tsx
 import React, { useState } from 'react';
 import { OnboardingData } from '@/pages/Onboarding';
 import OnboardingLayout from './OnboardingLayout';
+import { Button } from '@/components/ui/button';
 
 interface DietPreferenceProps {
   onNext: (data: Partial<OnboardingData>) => void;
@@ -9,14 +11,11 @@ interface DietPreferenceProps {
 }
 
 const dietOptions = [
-  { id: 'none', label: 'No specific diet', icon: '🍽️' },
-  { id: 'vegetarian', label: 'Vegetarian', icon: '🥗' },
-  { id: 'vegan', label: 'Vegan', icon: '🌱' },
-  { id: 'keto', label: 'Keto', icon: '🥑' },
-  { id: 'paleo', label: 'Paleo', icon: '🥩' },
-  { id: 'mediterranean', label: 'Mediterranean', icon: '🫒' },
-  { id: 'intermittent', label: 'Intermittent Fasting', icon: '⏰' },
-  { id: 'lowcarb', label: 'Low Carb', icon: '🥕' },
+  // Options directement tirées de l'image, sans emojis
+  { id: 'classic', label: 'Classique' }, // Traduction
+  { id: 'pescatarian', label: 'Pescétarien' }, // Traduction
+  { id: 'vegetarian', label: 'Végétarien' }, // Traduction
+  { id: 'vegan', label: 'Végétalien' }, // Traduction
 ];
 
 const DietPreference: React.FC<DietPreferenceProps> = ({
@@ -32,36 +31,56 @@ const DietPreference: React.FC<DietPreferenceProps> = ({
 
   return (
     <OnboardingLayout
-      title="Do you follow a specific diet?"
-      subtitle="Help us customize your meal recommendations"
-      onNext={handleNext}
+      title="Suivez-vous un régime alimentaire spécifique ?"
+      subtitle="Aidez-nous à personnaliser vos recommandations de repas."
       onBack={onBack}
       showProgress={true}
-      progress={55}
+      currentStep={10} // Ajustez le numéro d'étape
+      totalSteps={20}
       nextDisabled={!selectedDiet}
     >
-      <div className="grid grid-cols-2 gap-3">
-        {dietOptions.map((option) => (
-          <div
-            key={option.id}
-            onClick={() => setSelectedDiet(option.id)}
-            className={`p-4 rounded-2xl border-2 cursor-pointer transition-all ${
-              selectedDiet === option.id
-                ? 'bg-prot-orange border-prot-orange'
-                : 'bg-prot-light border-prot-light hover:border-prot-gray'
-            }`}
-          >
-            <div className="text-2xl mb-2 text-center">{option.icon}</div>
-            <div className={`text-center font-semibold ${
-              selectedDiet === option.id ? 'text-prot-black' : 'text-prot-black'
-            }`}>
-              {option.label}
-            </div>
-          </div>
-        ))}
+      <div className="flex-1 flex flex-col justify-center px-6 py-8">
+        <div className="space-y-4 mb-12">
+          {dietOptions.map((option) => (
+            <button
+              key={option.id}
+              onClick={() => setSelectedDiet(option.id)}
+              className={`w-full p-4 rounded-2xl border-2 transition-all duration-200 hover:scale-[1.01] flex items-center space-x-4 ${
+                selectedDiet === option.id
+                  ? 'bg-prot-orange border-prot-orange shadow-lg'
+                  : 'bg-prot-white border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              {/* Cercle de sélection (sans icône/emoji) */}
+              <div className="w-6 h-6 rounded-full flex items-center justify-center">
+                {selectedDiet === option.id ? (
+                  // Cercle blanc avec point noir si sélectionné (sur fond orange)
+                  <div className="w-full h-full rounded-full bg-prot-white flex items-center justify-center">
+                    <div className="w-2.5 h-2.5 rounded-full bg-prot-black" />
+                  </div>
+                ) : (
+                  // Cercle noir avec point blanc si non sélectionné (sur fond blanc)
+                  <div className="w-full h-full rounded-full bg-prot-black border border-prot-black/30 flex items-center justify-center">
+                    <div className="w-2.5 h-2.5 rounded-full bg-prot-white" />
+                  </div>
+                )}
+              </div>
+              
+              <div className="text-left flex-1">
+                <div className={`text-xl font-semibold ${
+                  selectedDiet === option.id ? 'text-prot-black' : 'text-prot-black'
+                }`}>
+                  {option.label}
+                </div>
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
+      {/* Le bouton "Suivant" est géré par OnboardingLayout */}
     </OnboardingLayout>
   );
 };
 
 export default DietPreference;
+                
