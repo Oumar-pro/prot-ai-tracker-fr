@@ -34,10 +34,8 @@ const ExerciseFrequency: React.FC<ExerciseFrequencyProps> = ({ onNext, onBack, d
       showProgress 
       currentStep={4} 
       totalSteps={20}
-      // Assurez-vous que le OnboardingLayout a un fond blanc (bg-prot-white)
-      // et que le padding est correct.
     >
-      <div className="flex-1 flex flex-col px-6 py-8"> {/* Maintenez le padding général de la page */}
+      <div className="flex-1 flex flex-col px-6 py-8">
         {/* Titre et sous-titre */}
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-prot-black mb-4 leading-tight">
@@ -45,7 +43,7 @@ const ExerciseFrequency: React.FC<ExerciseFrequencyProps> = ({ onNext, onBack, d
           </h2>
           <p className="text-prot-medium-gray text-lg">
             Ceci nous aide à calibrer votre plan personnalisé.
-          </p> {/* Texte ajusté pour correspondre à l'image */}
+          </p>
         </div>
 
         {/* Options de fréquence */}
@@ -55,25 +53,25 @@ const ExerciseFrequency: React.FC<ExerciseFrequencyProps> = ({ onNext, onBack, d
               <button
                 key={option.value}
                 onClick={() => setSelectedFrequency(option.value)}
-                // Design des options : fond foncé, texte clair, bordure subtile
+                // Design des options : fond foncé/orange, texte clair/noir, bordure subtile
                 className={`w-full py-4 px-6 rounded-2xl transition-all duration-200 hover:scale-[1.02]
                   ${
                     selectedFrequency === option.value
-                      ? 'bg-prot-orange border-prot-orange shadow-lg' // COULEUR ORANGE POUR L'OPTION SÉLECTIONNÉE
-                      : 'bg-prot-black border border-gray-700' // FOND NOIR, BORDURE GRIS FONCÉ POUR NON SÉLECTIONNÉ
+                      ? 'bg-prot-orange border-prot-orange shadow-lg' // OPTION SÉLECTIONNÉE : Fond ORANGE, bordure ORANGE
+                      : 'bg-prot-black border border-gray-700' // OPTION NON SÉLECTIONNÉE : Fond NOIR, bordure GRIS FONCÉ
                   }
                 `}
               >
-                <div className="flex items-center space-x-4"> {/* Maintien space-x-4 pour l'icône de cercle */}
+                <div className="flex items-center space-x-4">
                   {/* Icône de cercle de sélection */}
                   <div className="w-6 h-6 rounded-full flex items-center justify-center">
                     {selectedFrequency === option.value ? (
-                      // Cercle blanc avec point noir si sélectionné
+                      // Cercle blanc avec point noir si sélectionné (sur fond orange)
                       <div className="w-full h-full rounded-full bg-prot-white flex items-center justify-center">
                         <div className="w-2.5 h-2.5 rounded-full bg-prot-black" />
                       </div>
                     ) : (
-                      // Cercle noir avec point blanc si non sélectionné
+                      // Cercle noir avec point blanc si non sélectionné (sur fond noir)
                       <div className="w-full h-full rounded-full bg-prot-black border border-prot-white/30 flex items-center justify-center">
                         <div className="w-2.5 h-2.5 rounded-full bg-prot-white" />
                       </div>
@@ -83,13 +81,13 @@ const ExerciseFrequency: React.FC<ExerciseFrequencyProps> = ({ onNext, onBack, d
                   <div className="text-left flex-1">
                     {/* Texte des labels - couleur en fonction de la sélection */}
                     <div className={`text-xl font-semibold ${
-                      selectedFrequency === option.value ? 'text-prot-black' : 'text-prot-white'
+                      selectedFrequency === option.value ? 'text-prot-black' : 'text-prot-white' // Texte NOIR si sélectionné (sur orange), BLANC si non sélectionné (sur noir)
                     }`}>
                       {option.label}
                     </div>
-                    {/* Texte des descriptions - couleur claire */}
+                    {/* Texte des descriptions - couleur claire/grise */}
                     <div className={`text-sm ${
-                      selectedFrequency === option.value ? 'text-prot-black/80' : 'text-gray-300' // Légèrement plus clair pour la description
+                      selectedFrequency === option.value ? 'text-prot-black/80' : 'text-gray-300' // Texte noir/80 si sélectionné, gris-300 si non sélectionné
                     }`}>
                       {option.description}
                     </div>
@@ -114,4 +112,4 @@ const ExerciseFrequency: React.FC<ExerciseFrequencyProps> = ({ onNext, onBack, d
 };
 
 export default ExerciseFrequency;
-                    
+          
