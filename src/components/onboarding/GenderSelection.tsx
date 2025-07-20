@@ -1,3 +1,4 @@
+// src/components/onboarding/GenderSelection.tsx
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import OnboardingLayout from './OnboardingLayout';
@@ -15,9 +16,9 @@ const GenderSelection: React.FC<GenderSelectionProps> = ({ onNext, onBack, data 
   );
 
   const genderOptions = [
-    { value: 'male' as const, label: 'Male', icon: '👨' },
-    { value: 'female' as const, label: 'Female', icon: '👩' },
-    { value: 'other' as const, label: 'Other', icon: '👤' }
+    { value: 'male' as const, label: 'Homme' },   // EMOJI SUPPRIMÉ
+    { value: 'female' as const, label: 'Femme' },  // EMOJI SUPPRIMÉ
+    { value: 'other' as const, label: 'Autre' }    // EMOJI SUPPRIMÉ
   ];
 
   const handleNext = () => {
@@ -32,10 +33,10 @@ const GenderSelection: React.FC<GenderSelectionProps> = ({ onNext, onBack, data 
         {/* Titre et sous-titre */}
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-prot-black mb-4 leading-tight">
-            Choose your Gender
+            Choisissez votre genre
           </h2>
           <p className="text-prot-medium-gray text-lg">
-            This helps us personalize your nutrition plan
+            Ceci nous aide à personnaliser votre plan nutritionnel
           </p>
         </div>
 
@@ -46,15 +47,15 @@ const GenderSelection: React.FC<GenderSelectionProps> = ({ onNext, onBack, data 
               <button
                 key={option.value}
                 onClick={() => setSelectedGender(option.value)}
-                className={`w-full p-6 rounded-2xl border-2 transition-all duration-200 hover:scale-[1.02] ${
+                className={`w-full py-4 px-6 rounded-2xl border-2 transition-all duration-200 hover:scale-[1.02] ${ // MODIFIÉ: p-6 -> py-4 px-6
                   selectedGender === option.value
                     ? 'bg-prot-orange border-prot-orange shadow-lg'
                     : 'bg-prot-light-gray border-gray-200 hover:border-gray-300'
                 }`}
               >
-                <div className="flex items-center justify-center space-x-4">
-                  <span className="text-3xl">{option.icon}</span>
-                  <span className={`text-xl font-semibold ${
+                <div className="flex items-center justify-center"> {/* MODIFIÉ: space-x-4 supprimé car plus d'icône */}
+                  {/* <span className="text-3xl">{option.icon}</span>  // EMOJI SUPPRIMÉ */}
+                  <span className={`text-xl font-semibold ${ // INCHANGÉ: Taille du texte x-large
                     selectedGender === option.value ? 'text-prot-black' : 'text-prot-black'
                   }`}>
                     {option.label}
@@ -71,7 +72,7 @@ const GenderSelection: React.FC<GenderSelectionProps> = ({ onNext, onBack, data 
           disabled={!selectedGender}
           className="w-full h-14 bg-prot-orange hover:bg-prot-orange/90 text-prot-black font-semibold text-lg rounded-2xl transition-all duration-200 hover:scale-[1.02] shadow-lg disabled:opacity-50 disabled:scale-100"
         >
-          Next
+          Suivant
         </Button>
       </div>
     </OnboardingLayout>
@@ -79,3 +80,4 @@ const GenderSelection: React.FC<GenderSelectionProps> = ({ onNext, onBack, data 
 };
 
 export default GenderSelection;
+          
