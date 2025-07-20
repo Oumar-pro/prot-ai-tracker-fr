@@ -4,22 +4,34 @@ import { Button } from '@/components/ui/button';
 
 interface OnboardingLayoutProps {
   children: React.ReactNode;
+  title?: string;
+  subtitle?: string;
+  onNext?: () => void;
   onBack?: () => void;
   showProgress?: boolean;
+  progress?: number;
   currentStep?: number;
   totalSteps?: number;
+  nextDisabled?: boolean;
+  nextButtonText?: string;
   className?: string;
 }
 
 const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
   children,
+  title,
+  subtitle,
+  onNext,
   onBack,
   showProgress = false,
+  progress,
   currentStep = 0,
   totalSteps = 20,
+  nextDisabled = false,
+  nextButtonText = "Next",
   className = ''
 }) => {
-  const progressPercentage = (currentStep / totalSteps) * 100;
+  const progressPercentage = progress || (currentStep / totalSteps) * 100;
 
   return (
     <div className={`min-h-screen bg-prot-white flex flex-col ${className}`}>
@@ -57,8 +69,35 @@ const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
       )}
 
       {/* Contenu principal */}
-      <div className="flex-1 flex flex-col">
-        {children}
+      <div className="flex-1 flex flex-col px-6">
+        {title && (
+          <div className="text-center mb-8">
+            <h1 className="text-3xl font-bold text-prot-black mb-3">
+              {title}
+            </h1>
+            {subtitle && (
+              <p className="text-lg text-prot-gray">
+                {subtitle}
+              </p>
+            )}
+          </div>
+        )}
+        
+        <div className="flex-1 flex flex-col justify-center">
+          {children}
+        </div>
+        
+        {onNext && (
+          <div className="mt-8 pb-8">
+            <Button
+              onClick={onNext}
+              disabled={nextDisabled}
+              className="w-full bg-prot-orange text-prot-black font-semibold py-4 rounded-2xl text-lg hover:bg-prot-orange/90 disabled:bg-prot-light disabled:text-prot-gray"
+            >
+              {nextButtonText}
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

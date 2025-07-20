@@ -10,6 +10,15 @@ import LongTermResults from '@/components/onboarding/LongTermResults';
 import HeightWeightInput from '@/components/onboarding/HeightWeightInput';
 import MainGoalSelection from '@/components/onboarding/MainGoalSelection';
 import PlaceholderComponent from '@/components/onboarding/PlaceholderComponent';
+import DesiredWeightSelection from '@/components/onboarding/DesiredWeightSelection';
+import DietPreference from '@/components/onboarding/DietPreference';
+import GoalSpeedSelection from '@/components/onboarding/GoalSpeedSelection';
+import ObstacleIdentification from '@/components/onboarding/ObstacleIdentification';
+import AccomplishmentSelection from '@/components/onboarding/AccomplishmentSelection';
+import LoadingScreen from '@/components/onboarding/LoadingScreen';
+import PlanSummary from '@/components/onboarding/PlanSummary';
+import ThankYouScreen from '@/components/onboarding/ThankYouScreen';
+import RatingScreen from '@/components/onboarding/RatingScreen';
 
 export interface OnboardingData {
   gender?: 'male' | 'female' | 'other';
@@ -74,23 +83,9 @@ const Onboarding = () => {
       case 8:
         return <MainGoalSelection onNext={handleNext} onBack={handleBack} data={data} />;
       case 9:
-        return <PlaceholderComponent 
-          onNext={handleNext} 
-          onBack={handleBack} 
-          data={data}
-          title="Choose your desired weight"
-          subtitle="Set your target weight"
-          currentStep={9}
-        />;
+        return <DesiredWeightSelection onNext={handleNext} onBack={handleBack} data={data} />;
       case 10:
-        return <PlaceholderComponent 
-          onNext={handleNext} 
-          onBack={handleBack} 
-          data={data}
-          title="Do you follow a specific diet?"
-          subtitle="Help us customize your meal recommendations"
-          currentStep={10}
-        />;
+        return <DietPreference onNext={handleNext} onBack={handleBack} data={data} />;
       case 11:
         return <PlaceholderComponent 
           onNext={handleNext} 
@@ -101,14 +96,7 @@ const Onboarding = () => {
           currentStep={11}
         />;
       case 12:
-        return <PlaceholderComponent 
-          onNext={handleNext} 
-          onBack={handleBack} 
-          data={data}
-          title="How fast do you want to reach your goal?"
-          subtitle="Choose your preferred timeline"
-          currentStep={12}
-        />;
+        return <GoalSpeedSelection onNext={handleNext} onBack={handleBack} data={data} />;
       case 13:
         return <PlaceholderComponent 
           onNext={handleNext} 
@@ -119,56 +107,17 @@ const Onboarding = () => {
           currentStep={13}
         />;
       case 14:
-        return <PlaceholderComponent 
-          onNext={handleNext} 
-          onBack={handleBack} 
-          data={data}
-          title="What makes you stop before reaching your goal?"
-          subtitle="Let's identify potential obstacles"
-          currentStep={14}
-        />;
+        return <ObstacleIdentification onNext={handleNext} onBack={handleBack} data={data} />;
       case 15:
-        return <PlaceholderComponent 
-          onNext={handleNext} 
-          onBack={handleBack} 
-          data={data}
-          title="What would you like to accomplish?"
-          subtitle="Set your personal achievements"
-          currentStep={15}
-        />;
+        return <AccomplishmentSelection onNext={handleNext} onBack={handleBack} data={data} />;
       case 16:
-        return <PlaceholderComponent 
-          onNext={handleNext} 
-          onBack={undefined}
-          title="We're setting everything up for you"
-          subtitle="Applying BMR formula..."
-          currentStep={16}
-        />;
+        return <LoadingScreen onNext={handleNext} data={data} />;
       case 17:
-        return <PlaceholderComponent 
-          onNext={handleNext} 
-          onBack={handleBack} 
-          data={data}
-          title="Congratulations! Your custom plan is ready"
-          subtitle="Here's your personalized nutrition plan"
-          currentStep={17}
-        />;
+        return <PlanSummary onNext={handleNext} data={data} />;
       case 18:
-        return <PlaceholderComponent 
-          onNext={handleNext} 
-          onBack={handleBack}
-          title="All done! Thank you for trusting us"
-          subtitle="Your plan has been created successfully"
-          currentStep={18}
-        />;
+        return <ThankYouScreen onNext={handleNext} />;
       case 19:
-        return <PlaceholderComponent 
-          onNext={handleNext} 
-          onBack={handleBack}
-          title="Give us a rating"
-          subtitle="Prot AI was made for people like you"
-          currentStep={19}
-        />;
+        return <RatingScreen onNext={handleNext} />;
       default:
         return <SplashScreen onNext={handleNext} />;
     }

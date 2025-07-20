@@ -80,6 +80,66 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          accomplishments: string[] | null
+          birth_date: Json | null
+          created_at: string
+          desired_weight: number | null
+          diet: string | null
+          exercise_frequency: string | null
+          gender: string | null
+          goal: string | null
+          goal_speed: number | null
+          has_app_experience: boolean | null
+          height: number | null
+          height_unit: string | null
+          id: string
+          obstacles: string[] | null
+          updated_at: string
+          user_id: string
+          weight: number | null
+        }
+        Insert: {
+          accomplishments?: string[] | null
+          birth_date?: Json | null
+          created_at?: string
+          desired_weight?: number | null
+          diet?: string | null
+          exercise_frequency?: string | null
+          gender?: string | null
+          goal?: string | null
+          goal_speed?: number | null
+          has_app_experience?: boolean | null
+          height?: number | null
+          height_unit?: string | null
+          id?: string
+          obstacles?: string[] | null
+          updated_at?: string
+          user_id: string
+          weight?: number | null
+        }
+        Update: {
+          accomplishments?: string[] | null
+          birth_date?: Json | null
+          created_at?: string
+          desired_weight?: number | null
+          diet?: string | null
+          exercise_frequency?: string | null
+          gender?: string | null
+          goal?: string | null
+          goal_speed?: number | null
+          has_app_experience?: boolean | null
+          height?: number | null
+          height_unit?: string | null
+          id?: string
+          obstacles?: string[] | null
+          updated_at?: string
+          user_id?: string
+          weight?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
