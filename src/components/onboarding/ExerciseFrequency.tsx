@@ -53,12 +53,12 @@ const ExerciseFrequency: React.FC<ExerciseFrequencyProps> = ({ onNext, onBack, d
               <button
                 key={option.value}
                 onClick={() => setSelectedFrequency(option.value)}
-                // Design des options : fond foncé/orange, texte clair/noir, bordure subtile
-                className={`w-full py-4 px-6 rounded-2xl transition-all duration-200 hover:scale-[1.02]
+                // Design des options : fond blanc/orange, texte noir, bordure subtile
+                className={`w-full py-4 px-6 rounded-2xl border-2 transition-all duration-200 hover:scale-[1.02]
                   ${
                     selectedFrequency === option.value
                       ? 'bg-prot-orange border-prot-orange shadow-lg' // OPTION SÉLECTIONNÉE : Fond ORANGE, bordure ORANGE
-                      : 'bg-prot-black border border-gray-700' // OPTION NON SÉLECTIONNÉE : Fond NOIR, bordure GRIS FONCÉ
+                      : 'bg-prot-white border-gray-200 hover:border-gray-300' // OPTION NON SÉLECTIONNÉE : Fond BLANC, bordure GRIS CLAIR
                   }
                 `}
               >
@@ -71,8 +71,9 @@ const ExerciseFrequency: React.FC<ExerciseFrequencyProps> = ({ onNext, onBack, d
                         <div className="w-2.5 h-2.5 rounded-full bg-prot-black" />
                       </div>
                     ) : (
-                      // Cercle noir avec point blanc si non sélectionné (sur fond noir)
-                      <div className="w-full h-full rounded-full bg-prot-black border border-prot-white/30 flex items-center justify-center">
+                      // Cercle noir avec point blanc si non sélectionné (sur fond blanc)
+                      // Ajustement : Le cercle doit être noir sur fond blanc, avec point blanc
+                      <div className="w-full h-full rounded-full bg-prot-black border border-prot-black/30 flex items-center justify-center">
                         <div className="w-2.5 h-2.5 rounded-full bg-prot-white" />
                       </div>
                     )}
@@ -81,13 +82,13 @@ const ExerciseFrequency: React.FC<ExerciseFrequencyProps> = ({ onNext, onBack, d
                   <div className="text-left flex-1">
                     {/* Texte des labels - couleur en fonction de la sélection */}
                     <div className={`text-xl font-semibold ${
-                      selectedFrequency === option.value ? 'text-prot-black' : 'text-prot-white' // Texte NOIR si sélectionné (sur orange), BLANC si non sélectionné (sur noir)
+                      selectedFrequency === option.value ? 'text-prot-black' : 'text-prot-black' // Texte NOIR dans les deux cas (sur orange ou sur blanc)
                     }`}>
                       {option.label}
                     </div>
-                    {/* Texte des descriptions - couleur claire/grise */}
+                    {/* Texte des descriptions - couleur plus subtile */}
                     <div className={`text-sm ${
-                      selectedFrequency === option.value ? 'text-prot-black/80' : 'text-gray-300' // Texte noir/80 si sélectionné, gris-300 si non sélectionné
+                      selectedFrequency === option.value ? 'text-prot-black/80' : 'text-prot-medium-gray' // Texte noir/80 si sélectionné, gris moyen si non sélectionné
                     }`}>
                       {option.description}
                     </div>
@@ -112,4 +113,4 @@ const ExerciseFrequency: React.FC<ExerciseFrequencyProps> = ({ onNext, onBack, d
 };
 
 export default ExerciseFrequency;
-          
+  
