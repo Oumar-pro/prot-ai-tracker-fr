@@ -1,3 +1,4 @@
+// src/components/onboarding/BirthDateSelection.tsx
 import React, { useState, useRef, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import OnboardingLayout from './OnboardingLayout';
@@ -19,9 +20,9 @@ const BirthDateSelection: React.FC<BirthDateSelectionProps> = ({ onNext, onBack,
   const yearRef = useRef<HTMLDivElement>(null);
 
   const months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-  ];
+    'Janv', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin',
+    'Juil', 'Août', 'Sept', 'Oct', 'Nov', 'Déc'
+  ]; // Traduction des mois
 
   const days = Array.from({ length: 31 }, (_, i) => i + 1);
   const years = Array.from({ length: 100 }, (_, i) => new Date().getFullYear() - i);
@@ -30,7 +31,7 @@ const BirthDateSelection: React.FC<BirthDateSelectionProps> = ({ onNext, onBack,
     onNext({ birthDate: selectedDate });
   };
 
-  // Composant de sélecteur défilant
+  // Composant de sélecteur défilant - INCHANGÉ (logique interne)
   const ScrollPicker = ({ 
     items, 
     selectedIndex, 
@@ -100,11 +101,11 @@ const BirthDateSelection: React.FC<BirthDateSelectionProps> = ({ onNext, onBack,
         {/* Titre et sous-titre */}
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-prot-black mb-4 leading-tight">
-            When were you born?
-          </h2>
+            Quelle est votre date de naissance ?
+          </h2> {/* Traduction */}
           <p className="text-prot-medium-gray text-lg">
-            This helps us calculate your nutritional needs
-          </p>
+            Ceci nous aide à calculer vos besoins nutritionnels
+          </p> {/* Traduction */}
         </div>
 
         {/* Sélecteurs de date */}
@@ -113,8 +114,8 @@ const BirthDateSelection: React.FC<BirthDateSelectionProps> = ({ onNext, onBack,
             {/* Mois */}
             <div className="bg-prot-light-gray rounded-2xl">
               <div className="p-3 text-center">
-                <span className="text-sm font-medium text-prot-medium-gray">Month</span>
-              </div>
+                <span className="text-sm font-medium text-prot-medium-gray">Mois</span>
+              </div> {/* Traduction */}
               <ScrollPicker
                 items={months}
                 selectedIndex={selectedDate.month - 1}
@@ -126,8 +127,8 @@ const BirthDateSelection: React.FC<BirthDateSelectionProps> = ({ onNext, onBack,
             {/* Jour */}
             <div className="bg-prot-light-gray rounded-2xl">
               <div className="p-3 text-center">
-                <span className="text-sm font-medium text-prot-medium-gray">Day</span>
-              </div>
+                <span className="text-sm font-medium text-prot-medium-gray">Jour</span>
+              </div> {/* Traduction */}
               <ScrollPicker
                 items={days}
                 selectedIndex={selectedDate.day - 1}
@@ -139,8 +140,8 @@ const BirthDateSelection: React.FC<BirthDateSelectionProps> = ({ onNext, onBack,
             {/* Année */}
             <div className="bg-prot-light-gray rounded-2xl">
               <div className="p-3 text-center">
-                <span className="text-sm font-medium text-prot-medium-gray">Year</span>
-              </div>
+                <span className="text-sm font-medium text-prot-medium-gray">Année</span>
+              </div> {/* Traduction */}
               <ScrollPicker
                 items={years}
                 selectedIndex={years.indexOf(selectedDate.year)}
@@ -163,11 +164,12 @@ const BirthDateSelection: React.FC<BirthDateSelectionProps> = ({ onNext, onBack,
           onClick={handleNext}
           className="w-full h-14 bg-prot-orange hover:bg-prot-orange/90 text-prot-black font-semibold text-lg rounded-2xl transition-all duration-200 hover:scale-[1.02] shadow-lg"
         >
-          Next
-        </Button>
+          Suivant
+        </Button> {/* Traduction */}
       </div>
     </OnboardingLayout>
   );
 };
 
 export default BirthDateSelection;
+    
