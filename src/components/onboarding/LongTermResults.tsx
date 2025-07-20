@@ -24,7 +24,7 @@ const LongTermResults: React.FC<LongTermResultsProps> = ({ onNext, onBack }) => 
         <div className="flex-1 flex flex-col justify-center">
           {/* Conteneur pour les deux blocs côte à côte */}
           <div className="bg-prot-light-gray rounded-2xl p-4 mb-6 flex justify-around items-end gap-4 shadow-lg"> {/* Utilise bg-prot-light-gray comme fond principal du conteneur */}
-            {/* Bloc "Sans Prot AI" */}
+            {/* Bloc "Sans Prot AI" - Reste BLANC */}
             <div className="flex-1 bg-prot-white rounded-xl p-4 text-center flex flex-col items-center justify-between min-h-[160px] max-w-[150px] shadow-sm">
               <span className="text-lg font-semibold text-prot-black mb-4">Sans Prot AI</span> {/* Traduction */}
               <div className="flex-1 flex items-center justify-center">
@@ -32,11 +32,11 @@ const LongTermResults: React.FC<LongTermResultsProps> = ({ onNext, onBack }) => 
               </div>
             </div>
 
-            {/* Bloc "Avec Prot AI" */}
-            <div className="flex-1 bg-prot-black rounded-xl p-4 text-center flex flex-col items-center justify-between min-h-[160px] max-w-[150px] shadow-md">
-              <span className="text-lg font-semibold text-prot-white mb-4">Avec Prot AI</span> {/* Traduction, texte blanc */}
+            {/* Bloc "Avec Prot AI" - DEVIENT ORANGE AVEC TEXTE NOIR */}
+            <div className="flex-1 bg-prot-orange rounded-xl p-4 text-center flex flex-col items-center justify-between min-h-[160px] max-w-[150px] shadow-md">
+              <span className="text-lg font-semibold text-prot-black mb-4">Avec Prot AI</span> {/* Traduction, texte noir sur orange */}
               <div className="flex-1 flex items-center justify-center">
-                <span className="text-3xl font-bold text-prot-white">2X</span> {/* Texte blanc */}
+                <span className="text-3xl font-bold text-prot-black">2X</span> {/* Texte noir sur orange */}
               </div>
             </div>
           </div>
@@ -49,7 +49,7 @@ const LongTermResults: React.FC<LongTermResultsProps> = ({ onNext, onBack }) => 
 
         <Button
           onClick={onNext}
-          className="w-full h-14 bg-prot-black hover:bg-prot-black/80 text-prot-white font-semibold text-lg rounded-2xl transition-all duration-200 hover:scale-[1.02] shadow-lg mt-8"
+          className="w-full h-14 bg-prot-orange hover:bg-prot-orange/90 text-prot-black font-semibold text-lg rounded-2xl transition-all duration-200 hover:scale-[1.02] shadow-lg mt-8"
         >
           Suivant
         </Button> {/* Traduction */}
@@ -59,4 +59,4 @@ const LongTermResults: React.FC<LongTermResultsProps> = ({ onNext, onBack }) => 
 };
 
 export default LongTermResults;
-                
+      
