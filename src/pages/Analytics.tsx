@@ -1,11 +1,15 @@
 import Navigation from "@/components/Navigation";
 import WeightOverview from "@/components/WeightOverview";
 import { useState } from "react";
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useTodayMacros } from "@/hooks/useFoodAnalyses";
 
 const Analytics = () => {
-  const [selectedPeriod, setSelectedPeriod] = useState("Cette semaine");
+  const { t } = useLanguage();
+  const { data: macros } = useTodayMacros();
+  const [selectedPeriod, setSelectedPeriod] = useState(t("this_week"));
   
-  const periods = ["Cette semaine", "Semaine dernière", "Il y a 2 sem.", "Il y a 3 sem."];
+  const periods = [t("this_week"), t("last_week"), t("weeks_ago_2"), t("weeks_ago_3")];
 
   return (
     <div className="min-h-screen bg-background pb-20">

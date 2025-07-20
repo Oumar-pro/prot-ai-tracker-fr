@@ -4,34 +4,39 @@ import WeekCalendar from "@/components/WeekCalendar";
 import FloatingAddButton from "@/components/FloatingAddButton";
 import AnalysisProgress from "@/components/AnalysisProgress";
 import { useTodayMacros } from "@/hooks/useFoodAnalyses";
-// Si Progress n'est plus utilisé nulle part ailleurs dans Home.jsx, vous pouvez commenter ou supprimer l'importation.
-// import { Progress } from "@/components/ui/progress";
 import { useState, useEffect } from "react";
-
+import { useLanguage } from "@/contexts/LanguageContext";
+import { useAuth, useProfile, calculateDailyCalories } from "@/hooks/useProfile";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
   const { data: macros } = useTodayMacros();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const { t } = useLanguage();
+  const { user, loading } = useAuth();
+  const { data: profile } = useProfile();
+  const navigate = useNavigate();
   
-  // Authentification anonyme automatique
+  // Redirect to onboarding if not authenticated
   useEffect(() => {
-    const initAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) {
-        await supabase.auth.signInAnonymously();
-      }
-    };
-    initAuth();
-  }, []);
+    if (!loading && !user) {
+      navigate('/onboarding');
+    }
+  }, [user, loading, navigate]);
   
   // État pour stocker les repas récents et l'état de chargement
   const [recentMeals, setRecentMeals] = useState([]);
   const [loadingMeals, setLoadingMeals] = useState(true);
   const [errorMeals, setErrorMeals] = useState(null);
 
-  // Objectifs journaliers
-  const dailyGoals = {
+  // Objectifs journaliers basés sur le profil utilisateur
+  const dailyGoals = profile ? {
+    calories: calculateDailyCalories(profile),
+    proteins: Math.round((calculateDailyCalories(profile) * 0.25) / 4), // 25% of calories from protein
+    carbs: Math.round((calculateDailyCalories(profile) * 0.45) / 4), // 45% of calories from carbs
+    fats: Math.round((calculateDailyCalories(profile) * 0.30) / 9), // 30% of calories from fats
+  } : {
     calories: 2100,
     proteins: 120,
     carbs: 250,
@@ -140,26 +145,26 @@ const Home = () => {
                   <h2 className="text-5xl font-bold text-foreground mb-2">
                     {Math.max(dailyGoals.calories - (macros?.calories || 0), 0)}
                   </h2>
-                  <p className="text-lg text-muted-foreground mb-1">Calories restantes</p>
-                  <p className="text-sm text-muted-foreground">
-                    Objectif : {dailyGoals.calories} Kcal
-                  </p>
+                   <p className="text-lg text-muted-foreground mb-1">{t('calories_remaining')}</p>
+                   <p className="text-sm text-muted-foreground">
+                     {t('goal')} : {dailyGoals.calories} Kcal
+                   </p>
                 </div>
                 <div className="flex flex-col items-center">
                   <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center mb-2 shadow-glow">
                     <Flame className="w-8 h-8 text-primary" />
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-foreground">{macros?.calories || 0}</p>
-                    <p className="text-xs text-muted-foreground">consommées</p>
+                     <p className="text-2xl font-bold text-foreground">{macros?.calories || 0}</p>
+                     <p className="text-xs text-muted-foreground">{t('consumed')}</p>
                   </div>
                 </div>
               </div>
               
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
-                  <span className="text-muted-foreground">Progression</span>
-                  <span className="text-primary font-medium">{Math.round(caloriesProgress)}%</span>
+                   <span className="text-muted-foreground">{t('progress')}</span>
+                   <span className="text-primary font-medium">{Math.round(caloriesProgress)}%</span>
                 </div>
                 <div className="h-2 bg-secondary rounded-full overflow-hidden">
                   <div 
@@ -180,8 +185,8 @@ const Home = () => {
                 <Zap className="w-4 h-4 text-white" />
               </div>
               <div className="flex-1">
-                <p className="text-xs text-muted-foreground">Protéines</p>
-                <p className="text-lg font-bold text-foreground">{Math.round(macros?.proteins || 0)}g</p>
+                 <p className="text-xs text-muted-foreground">{t('proteins')}</p>
+                 <p className="text-lg font-bold text-foreground">{Math.round(macros?.proteins || 0)}g</p>
               </div>
             </div>
             <div className="space-y-1">
@@ -191,7 +196,7 @@ const Home = () => {
                   style={{ width: `${proteinsProgress}%` }}
                 />
               </div>
-              <p className="text-xs text-muted-foreground">{Math.max(dailyGoals.proteins - Math.round(macros?.proteins || 0), 0)}g restantes</p>
+              <p className="text-xs text-muted-foreground">{Math.max(dailyGoals.proteins - Math.round(macros?.proteins || 0), 0)}g {t('remaining')}</p>
             </div>
           </div>
           
@@ -201,8 +206,8 @@ const Home = () => {
                 <Wheat className="w-4 h-4 text-white" />
               </div>
               <div className="flex-1">
-                <p className="text-xs text-muted-foreground">Glucides</p>
-                <p className="text-lg font-bold text-foreground">{Math.round(macros?.carbs || 0)}g</p>
+                 <p className="text-xs text-muted-foreground">{t('carbs')}</p>
+                 <p className="text-lg font-bold text-foreground">{Math.round(macros?.carbs || 0)}g</p>
               </div>
             </div>
             <div className="space-y-1">
@@ -212,7 +217,7 @@ const Home = () => {
                   style={{ width: `${carbsProgress}%` }}
                 />
               </div>
-              <p className="text-xs text-muted-foreground">{Math.max(dailyGoals.carbs - Math.round(macros?.carbs || 0), 0)}g restantes</p>
+              <p className="text-xs text-muted-foreground">{Math.max(dailyGoals.carbs - Math.round(macros?.carbs || 0), 0)}g {t('remaining')}</p>
             </div>
           </div>
           
@@ -222,8 +227,8 @@ const Home = () => {
                 <Droplets className="w-4 h-4 text-white" />
               </div>
               <div className="flex-1">
-                <p className="text-xs text-muted-foreground">Lipides</p>
-                <p className="text-lg font-bold text-foreground">{Math.round(macros?.fats || 0)}g</p>
+                 <p className="text-xs text-muted-foreground">{t('fats')}</p>
+                 <p className="text-lg font-bold text-foreground">{Math.round(macros?.fats || 0)}g</p>
               </div>
             </div>
             <div className="space-y-1">
@@ -233,14 +238,14 @@ const Home = () => {
                   style={{ width: `${fatsProgress}%` }}
                 />
               </div>
-              <p className="text-xs text-muted-foreground">{Math.max(dailyGoals.fats - Math.round(macros?.fats || 0), 0)}g restantes</p>
+              <p className="text-xs text-muted-foreground">{Math.max(dailyGoals.fats - Math.round(macros?.fats || 0), 0)}g {t('remaining')}</p>
             </div>
           </div>
         </div>
 
         {/* --- SECTION "REPAS RÉCENTS" AVEC PROGRESSION D'ANALYSE --- */}
         <div className="mb-8"> 
-            <h2 className="text-xl font-bold text-foreground mb-4">Repas récents</h2>
+            <h2 className="text-xl font-bold text-foreground mb-4">{t('recent_meals')}</h2>
             
             {/* Afficher la progression d'analyse dans cette section */}
             {isAnalyzing && (
@@ -266,9 +271,9 @@ const Home = () => {
                             <div className="flex-1">
                                 <p className="font-bold text-foreground">{meal.name}</p>
                                 <p className="text-sm text-muted-foreground">{meal.time} - {meal.calories} Kcal</p>
-                                <p className="text-xs text-muted-foreground">
-                                    Protéines: {meal.proteins}g, Glucides: {meal.carbs}g, Lipides: {meal.fats}g
-                                </p>
+                                 <p className="text-xs text-muted-foreground">
+                                     {t('proteins')}: {meal.proteins}g, {t('carbs')}: {meal.carbs}g, {t('fats')}: {meal.fats}g
+                                 </p>
                             </div>
                         </div>
                     ))}
@@ -284,15 +289,15 @@ const Home = () => {
                         <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
                           <Target className="w-8 h-8 text-primary" />
                         </div>
-                        <h3 className="text-xl font-bold text-foreground mb-2">Vous n'avez ajouté aucun aliment</h3>
-                        <p className="text-muted-foreground">
-                          Commencez à suivre vos repas d'aujourd'hui en prenant des photos rapides
-                        </p>
+                         <h3 className="text-xl font-bold text-foreground mb-2">{t('no_meals_added')}</h3>
+                         <p className="text-muted-foreground">
+                           {t('start_tracking')}
+                         </p>
                       </div>
                       <div className="text-center">
-                        <p className="text-sm text-muted-foreground mb-6">
-                          Appuyez sur le + pour analyser.
-                        </p>
+                         <p className="text-sm text-muted-foreground mb-6">
+                           {t('tap_plus_to_analyze')}
+                         </p>
                       </div>
                     </div>
                   </div>

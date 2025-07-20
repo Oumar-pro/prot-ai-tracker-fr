@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SplashScreen from '@/components/onboarding/SplashScreen';
 import CalorieTrackingIntro from '@/components/onboarding/CalorieTrackingIntro';
+import AuthScreen from '@/components/onboarding/AuthScreen';
 import GenderSelection from '@/components/onboarding/GenderSelection';
 import BirthDateSelection from '@/components/onboarding/BirthDateSelection';
 import ExerciseFrequency from '@/components/onboarding/ExerciseFrequency';
@@ -41,7 +42,7 @@ const Onboarding = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [data, setData] = useState<OnboardingData>({});
 
-  const totalSteps = 20;
+  const totalSteps = 21;
 
   const handleNext = (stepData?: Partial<OnboardingData>) => {
     if (stepData) {
@@ -69,54 +70,56 @@ const Onboarding = () => {
       case 1:
         return <CalorieTrackingIntro onNext={handleNext} onBack={handleBack} />;
       case 2:
-        return <GenderSelection onNext={handleNext} onBack={handleBack} data={data} />;
+        return <AuthScreen onNext={handleNext} onBack={handleBack} />;
       case 3:
-        return <BirthDateSelection onNext={handleNext} onBack={handleBack} data={data} />;
+        return <GenderSelection onNext={handleNext} onBack={handleBack} data={data} />;
       case 4:
-        return <ExerciseFrequency onNext={handleNext} onBack={handleBack} data={data} />;
+        return <BirthDateSelection onNext={handleNext} onBack={handleBack} data={data} />;
       case 5:
-        return <AppExperience onNext={handleNext} onBack={handleBack} data={data} />;
+        return <ExerciseFrequency onNext={handleNext} onBack={handleBack} data={data} />;
       case 6:
-        return <LongTermResults onNext={handleNext} onBack={handleBack} />;
+        return <AppExperience onNext={handleNext} onBack={handleBack} data={data} />;
       case 7:
-        return <HeightWeightInput onNext={handleNext} onBack={handleBack} data={data} />;
+        return <LongTermResults onNext={handleNext} onBack={handleBack} />;
       case 8:
-        return <MainGoalSelection onNext={handleNext} onBack={handleBack} data={data} />;
+        return <HeightWeightInput onNext={handleNext} onBack={handleBack} data={data} />;
       case 9:
-        return <DesiredWeightSelection onNext={handleNext} onBack={handleBack} data={data} />;
+        return <MainGoalSelection onNext={handleNext} onBack={handleBack} data={data} />;
       case 10:
-        return <DietPreference onNext={handleNext} onBack={handleBack} data={data} />;
+        return <DesiredWeightSelection onNext={handleNext} onBack={handleBack} data={data} />;
       case 11:
-        return <PlaceholderComponent 
-          onNext={handleNext} 
-          onBack={handleBack} 
-          data={data}
-          title="Realistic target confirmation"
-          subtitle="Your goal is achievable!"
-          currentStep={11}
-        />;
+        return <DietPreference onNext={handleNext} onBack={handleBack} data={data} />;
       case 12:
-        return <GoalSpeedSelection onNext={handleNext} onBack={handleBack} data={data} />;
-      case 13:
         return <PlaceholderComponent 
           onNext={handleNext} 
           onBack={handleBack} 
           data={data}
-          title="You have great potential!"
-          subtitle="Studies show you can crush your goal"
-          currentStep={13}
+          title="Objectif réaliste confirmé"
+          subtitle="Votre objectif est atteignable !"
+          currentStep={12}
         />;
+      case 13:
+        return <GoalSpeedSelection onNext={handleNext} onBack={handleBack} data={data} />;
       case 14:
-        return <ObstacleIdentification onNext={handleNext} onBack={handleBack} data={data} />;
+        return <PlaceholderComponent 
+          onNext={handleNext} 
+          onBack={handleBack} 
+          data={data}
+          title="Vous avez un grand potentiel !"
+          subtitle="Les études montrent que vous pouvez atteindre votre objectif"
+          currentStep={14}
+        />;
       case 15:
-        return <AccomplishmentSelection onNext={handleNext} onBack={handleBack} data={data} />;
+        return <ObstacleIdentification onNext={handleNext} onBack={handleBack} data={data} />;
       case 16:
-        return <LoadingScreen onNext={handleNext} data={data} />;
+        return <AccomplishmentSelection onNext={handleNext} onBack={handleBack} data={data} />;
       case 17:
-        return <PlanSummary onNext={handleNext} data={data} />;
+        return <LoadingScreen onNext={handleNext} data={data} />;
       case 18:
-        return <ThankYouScreen onNext={handleNext} />;
+        return <PlanSummary onNext={handleNext} data={data} />;
       case 19:
+        return <ThankYouScreen onNext={handleNext} />;
+      case 20:
         return <RatingScreen onNext={handleNext} />;
       default:
         return <SplashScreen onNext={handleNext} />;
