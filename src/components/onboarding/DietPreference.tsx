@@ -34,6 +34,7 @@ const DietPreference: React.FC<DietPreferenceProps> = ({
       title="Suivez-vous un régime alimentaire spécifique ?"
       subtitle="Aidez-nous à personnaliser vos recommandations de repas."
       onBack={onBack}
+      onNext={handleNext} // ✅ Ajout de la prop manquante
       showProgress={true}
       currentStep={10} // Ajustez le numéro d'étape
       totalSteps={20}
@@ -83,4 +84,3 @@ const DietPreference: React.FC<DietPreferenceProps> = ({
 };
 
 export default DietPreference;
-                
