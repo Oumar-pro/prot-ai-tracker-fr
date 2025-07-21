@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import OnboardingLayout from './OnboardingLayout';
 import { OnboardingData } from '@/pages/Onboarding';
-import { Circle, CheckCircle2 } from 'lucide-react'; // Importez les icônes de Lucide React
 
 interface ExerciseFrequencyProps {
   onNext: (data: Partial<OnboardingData>) => void;
@@ -54,36 +53,42 @@ const ExerciseFrequency: React.FC<ExerciseFrequencyProps> = ({ onNext, onBack, d
               <button
                 key={option.value}
                 onClick={() => setSelectedFrequency(option.value)}
+                // Design des options : fond blanc/orange, texte noir, bordure subtile
                 className={`w-full py-4 px-6 rounded-2xl border-2 transition-all duration-200 hover:scale-[1.02]
                   ${
                     selectedFrequency === option.value
-                      ? 'bg-prot-orange border-prot-orange shadow-lg'
-                      : 'bg-prot-white border-gray-200 hover:border-gray-300'
+                      ? 'bg-prot-orange border-prot-orange shadow-lg' // OPTION SÉLECTIONNÉE : Fond ORANGE, bordure ORANGE
+                      : 'bg-prot-white border-gray-200 hover:border-gray-300' // OPTION NON SÉLECTIONNÉE : Fond BLANC, bordure GRIS CLAIR
                   }
                 `}
               >
                 <div className="flex items-center space-x-4">
-                  {/* Icônes premium de sélection */}
-                  <div className="w-6 h-6 flex items-center justify-center">
+                  {/* Icône de cercle de sélection */}
+                  <div className="w-6 h-6 rounded-full flex items-center justify-center">
                     {selectedFrequency === option.value ? (
-                      // Icône de cercle cochée pour l'option sélectionnée (sur fond orange)
-                      <CheckCircle2 size={24} className="text-prot-black" /> // Icône noire sur fond orange
+                      // Cercle blanc avec point noir si sélectionné (sur fond orange)
+                      <div className="w-full h-full rounded-full bg-prot-white flex items-center justify-center">
+                        <div className="w-2.5 h-2.5 rounded-full bg-prot-black" />
+                      </div>
                     ) : (
-                      // Icône de cercle vide pour l'option non sélectionnée (sur fond blanc)
-                      <Circle size={24} className="text-prot-black" /> // Icône noire sur fond blanc
+                      // Cercle noir avec point blanc si non sélectionné (sur fond blanc)
+                      // Ajustement : Le cercle doit être noir sur fond blanc, avec point blanc
+                      <div className="w-full h-full rounded-full bg-prot-black border border-prot-black/30 flex items-center justify-center">
+                        <div className="w-2.5 h-2.5 rounded-full bg-prot-white" />
+                      </div>
                     )}
                   </div>
                   
                   <div className="text-left flex-1">
                     {/* Texte des labels - couleur en fonction de la sélection */}
                     <div className={`text-xl font-semibold ${
-                      selectedFrequency === option.value ? 'text-prot-black' : 'text-prot-black'
+                      selectedFrequency === option.value ? 'text-prot-black' : 'text-prot-black' // Texte NOIR dans les deux cas (sur orange ou sur blanc)
                     }`}>
                       {option.label}
                     </div>
                     {/* Texte des descriptions - couleur plus subtile */}
                     <div className={`text-sm ${
-                      selectedFrequency === option.value ? 'text-prot-black/80' : 'text-prot-medium-gray'
+                      selectedFrequency === option.value ? 'text-prot-black/80' : 'text-prot-medium-gray' // Texte noir/80 si sélectionné, gris moyen si non sélectionné
                     }`}>
                       {option.description}
                     </div>
@@ -98,8 +103,7 @@ const ExerciseFrequency: React.FC<ExerciseFrequencyProps> = ({ onNext, onBack, d
         <Button
           onClick={handleNext}
           disabled={!selectedFrequency}
-          // Modifié pour être orange
-          className="w-full h-14 bg-prot-orange hover:bg-prot-orange/80 text-prot-white font-semibold text-lg rounded-2xl transition-all duration-200 hover:scale-[1.02] shadow-lg disabled:opacity-50 disabled:scale-100"
+          className="w-full h-14 bg-prot-black hover:bg-prot-black/80 text-prot-white font-semibold text-lg rounded-2xl transition-all duration-200 hover:scale-[1.02] shadow-lg disabled:opacity-50 disabled:scale-100" // Bouton Next en noir, texte blanc
         >
           Suivant
         </Button>
@@ -109,4 +113,4 @@ const ExerciseFrequency: React.FC<ExerciseFrequencyProps> = ({ onNext, onBack, d
 };
 
 export default ExerciseFrequency;
-        
+  
