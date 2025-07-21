@@ -1,193 +1,117 @@
-import React, { useState } from "react";
-import { ArrowLeft, Flame, Zap, Wheat, Droplets, Heart, MoreHorizontal, Minus, Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { FoodAnalysisResult } from "./CameraScanner";
+import { Card } from "@/components/ui/card"
+import { Progress } from "@/components/ui/progress"
+import { Button } from "@/components/ui/button"
+import { Flame, Minus, Plus, Info, AlertCircle } from "lucide-react"
+import { motion } from "framer-motion"
 
-interface FoodAnalysisResultsProps {
-  result: FoodAnalysisResult;
-  onClose: () => void;
-  onAddToDaily: (result: FoodAnalysisResult) => void;
+interface FoodAnalysisResult {
+  name: string
+  ingredients: string[]
+  nutritionalInfo: {
+    calories: number
+    proteins: number
+    carbs: number
+    fats: number
+    fiber: number
+    sugar: number
+  }
+  portion: {
+    size: string
+    weight: number
+  }
+  healthScore: number
+  recommendations: string[]
+  allergies: string[]
+  confidence: number
+  imageUrl?: string
 }
 
-const FoodAnalysisResults: React.FC<FoodAnalysisResultsProps> = ({ result, onClose, onAddToDaily }) => {
-  const [portionCount, setPortionCount] = useState(1);
+export default function FoodAnalysisDisplay({ data }: { data: FoodAnalysisResult }) {
+  const [portionCount, setPortionCount] = useState(1)
 
-  const adjustedNutrition = {
-    calories: Math.round(result.nutritionalInfo.calories * portionCount),
-    proteins: Math.round(result.nutritionalInfo.proteins * portionCount),
-    carbs: Math.round(result.nutritionalInfo.carbs * portionCount),
-    fats: Math.round(result.nutritionalInfo.fats * portionCount),
-  };
-
-  const handleAddToDaily = () => {
-    const adjustedResult = {
-      ...result,
-      nutritionalInfo: {
-        ...result.nutritionalInfo,
-        calories: adjustedNutrition.calories,
-        proteins: adjustedNutrition.proteins,
-        carbs: adjustedNutrition.carbs,
-        fats: adjustedNutrition.fats,
-      }
-    };
-    onAddToDaily(adjustedResult);
-  };
-
-  const healthScoreColor = result.healthScore >= 7 ? "bg-green-500" : result.healthScore >= 5 ? "bg-yellow-500" : "bg-red-500";
+  const increment = () => setPortionCount((p) => p + 1)
+  const decrement = () => setPortionCount((p) => (p > 1 ? p - 1 : 1))
 
   return (
-    <div className="fixed inset-0 z-50 bg-background">
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 pt-12 bg-background border-b border-border">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={onClose}
-          className="w-10 h-10 rounded-full"
-        >
-          <ArrowLeft className="w-5 h-5" />
+    <Card className="max-w-xl w-full mx-auto bg-white dark:bg-zinc-900 rounded-2xl shadow-xl p-6 space-y-6">
+      {/* Image du plat */}
+      {data.imageUrl && (
+        <img
+          src={data.imageUrl}
+          alt={data.name}
+          className="w-full h-48 object-cover rounded-xl shadow-sm"
+        />
+      )}
+
+      {/* Nom du plat */}
+      <h2 className="text-2xl font-bold text-center">{data.name}</h2>
+
+      {/* Score santé */}
+      <div className="space-y-1">
+        <div className="flex justify-between text-sm">
+          <span className="text-muted-foreground">Score Santé</span>
+          <span>{data.healthScore}%</span>
+        </div>
+        <Progress
+          value={data.healthScore}
+          className="h-3 rounded-full"
+          style={{
+            background: `linear-gradient(to right, ${
+              data.healthScore > 75 ? "#22c55e" : data.healthScore > 50 ? "#eab308" : "#ef4444"
+            } ${data.healthScore}%, transparent 0%)`,
+          }}
+        />
+      </div>
+
+      {/* Nutriments */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-center text-sm">
+        {Object.entries(data.nutritionalInfo).map(([key, value]) => (
+          <div key={key} className="rounded-xl bg-zinc-100 dark:bg-zinc-800 p-3">
+            <p className="text-xs capitalize text-muted-foreground">{key}</p>
+            <p className="text-lg font-semibold">{value}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Portion */}
+      <div className="flex items-center justify-center gap-4">
+        <Button variant="ghost" size="sm" onClick={decrement} className="rounded-full border">
+          <Minus />
         </Button>
-        
-        <h1 className="text-lg font-semibold text-foreground">Nutrition</h1>
-        
-        <Button
-          variant="ghost"
-          size="icon"
-          className="w-10 h-10 rounded-full"
-        >
-          <MoreHorizontal className="w-5 h-5" />
+        <span className="text-sm font-medium">
+          Portion : {portionCount}x ({data.portion.weight * portionCount}g)
+        </span>
+        <Button variant="ghost" size="sm" onClick={increment} className="rounded-full border">
+          <Plus />
         </Button>
       </div>
 
-      <div className="flex-1 overflow-y-auto pb-32">
-        {/* Food Image */}
-        <div className="relative h-80 bg-gradient-to-br from-amber-400 to-orange-600">
-          <div className="absolute inset-0 bg-black/20" />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="w-48 h-48 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm">
-              <div className="w-32 h-32 bg-gradient-to-br from-amber-600 to-amber-800 rounded-full flex items-center justify-center">
-                <Wheat className="w-16 h-16 text-white" />
-              </div>
-            </div>
+      {/* Allergies */}
+      {data.allergies.length > 0 && (
+        <div className="flex items-start gap-2 p-4 bg-red-50 dark:bg-red-900/20 rounded-xl">
+          <AlertCircle className="text-red-500 mt-1" />
+          <div>
+            <h3 className="text-sm font-semibold">Allergènes détectés :</h3>
+            <ul className="text-sm list-disc list-inside text-red-600 dark:text-red-400">
+              {data.allergies.map((a, i) => (
+                <li key={i}>{a}</li>
+              ))}
+            </ul>
           </div>
         </div>
+      )}
 
-        {/* Content */}
-        <div className="p-6 space-y-6">
-          {/* Meal Title and Portion Counter */}
-          <div className="flex items-center justify-between">
-            <div className="flex-1">
-              <p className="text-sm text-muted-foreground font-medium mb-1">Breakfast</p>
-              <h2 className="text-2xl font-bold text-foreground">{result.name}</h2>
-            </div>
-            
-            {/* Portion Counter */}
-            <div className="flex items-center gap-4 bg-muted rounded-full px-4 py-2">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setPortionCount(Math.max(1, portionCount - 1))}
-                className="w-8 h-8 rounded-full"
-              >
-                <Minus className="w-4 h-4" />
-              </Button>
-              <span className="text-lg font-semibold min-w-[2rem] text-center">{portionCount}</span>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setPortionCount(portionCount + 1)}
-                className="w-8 h-8 rounded-full"
-              >
-                <Plus className="w-4 h-4" />
-              </Button>
-            </div>
-          </div>
-
-          {/* Nutrition Grid */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-xl">
-              <div className="w-10 h-10 rounded-xl bg-orange-500/20 flex items-center justify-center">
-                <Flame className="w-5 h-5 text-orange-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Calories</p>
-                <p className="text-xl font-bold text-foreground">{adjustedNutrition.calories}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-xl">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
-                <Wheat className="w-5 h-5 text-amber-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Carbs</p>
-                <p className="text-xl font-bold text-foreground">{adjustedNutrition.carbs}g</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-xl">
-              <div className="w-10 h-10 rounded-xl bg-red-500/20 flex items-center justify-center">
-                <Zap className="w-5 h-5 text-red-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Protein</p>
-                <p className="text-xl font-bold text-foreground">{adjustedNutrition.proteins}g</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-xl">
-              <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                <Droplets className="w-5 h-5 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Fats</p>
-                <p className="text-xl font-bold text-foreground">{adjustedNutrition.fats}g</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Health Score */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-pink-500/20 flex items-center justify-center">
-                  <Heart className="w-5 h-5 text-pink-600" />
-                </div>
-                <span className="text-lg font-semibold text-foreground">Health score</span>
-              </div>
-              <span className="text-2xl font-bold text-foreground">{result.healthScore}/10</span>
-            </div>
-            <div className="h-3 bg-muted rounded-full overflow-hidden">
-              <div 
-                className={`h-full ${healthScoreColor} rounded-full transition-all duration-1000 ease-out`}
-                style={{ width: `${result.healthScore * 10}%` }}
-              />
-            </div>
-          </div>
-        </div>
+      {/* Recommandations */}
+      <div className="space-y-2">
+        <h3 className="text-sm font-semibold flex items-center gap-2">
+          <Info className="w-4 h-4" /> Recommandations santé
+        </h3>
+        <ul className="text-sm list-disc list-inside text-muted-foreground">
+          {data.recommendations.map((rec, i) => (
+            <li key={i}>{rec}</li>
+          ))}
+        </ul>
       </div>
-
-      {/* Bottom Buttons */}
-      <div className="absolute bottom-0 left-0 right-0 p-6 bg-background border-t border-border">
-        <div className="flex gap-4">
-          <Button 
-            variant="outline" 
-            className="flex-1 h-12 rounded-full"
-            onClick={onClose}
-          >
-            <span className="mr-2">✦</span> Fix Results
-          </Button>
-          <Button 
-            className="flex-1 h-12 rounded-full bg-foreground text-background hover:bg-foreground/90"
-            onClick={handleAddToDaily}
-          >
-            Done
-          </Button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default FoodAnalysisResults;
+    </Card>
+  )
+      }
