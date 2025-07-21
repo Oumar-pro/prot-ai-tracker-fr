@@ -1,4 +1,4 @@
-Import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { OnboardingData } from '@/pages/Onboarding';
 import OnboardingLayout from './OnboardingLayout';
 import { Slider } from '@/components/ui/slider';
