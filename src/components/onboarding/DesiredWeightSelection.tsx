@@ -1,31 +1,67 @@
 import React, { useState } from 'react';
+import { OnboardingData } from '@/pages/Onboarding';
+import OnboardingLayout from './OnboardingLayout';
+import { Slider } from '@/components/ui/slider';
 
-// Version temporaire simplifiée pour identifier le problème
-const DesiredWeightSelection: React.FC<any> = ({
+interface DesiredWeightSelectionProps {
+  onNext: (data: Partial<OnboardingData>) => void;
+  onBack: () => void;
+  data: OnboardingData;
+}
+
+const DesiredWeightSelection: React.FC<DesiredWeightSelectionProps> = ({
   onNext,
   onBack,
   data,
 }) => {
-  const [desiredWeight, setDesiredWeight] = useState(70);
+  const currentWeight = data.weight || 70;
+  const isWeightLoss = data.goal === 'lose';
+  const minWeight = isWeightLoss ? Math.max(40, currentWeight - 50) : currentWeight;
+  const maxWeight = isWeightLoss ? currentWeight - 1 : currentWeight + 50;
+  
+  const [desiredWeight, setDesiredWeight] = useState(
+    data.desiredWeight || (isWeightLoss ? currentWeight - 10 : currentWeight + 10)
+  );
+
+  const handleNext = () => {
+    onNext({ desiredWeight });
+  };
 
   return (
-    <div className="p-4">
-      <h1>Test - Desired Weight</h1>
-      <p>Poids désiré: {desiredWeight} kg</p>
-      <input 
-        type="range" 
-        min="40" 
-        max="120" 
-        value={desiredWeight}
-        onChange={(e) => setDesiredWeight(Number(e.target.value))}
-      />
-      <button onClick={() => onNext({ desiredWeight })}>
-        Suivant
-      </button>
-      <button onClick={onBack}>
-        Retour
-      </button>
-    </div>
+    <OnboardingLayout
+      title={`Choose your desired weight`}
+      subtitle={`Current weight: ${currentWeight} ${data.heightUnit === 'imperial' ? 'lbs' : 'kg'}`}
+      onNext={handleNext}
+      onBack={onBack}
+      showProgress={true}
+      progress={50}
+    >
+      <div className="space-y-8">
+        <div className="text-center">
+          <div className="text-6xl font-bold text-prot-black mb-2">
+            {Math.round(desiredWeight)}
+          </div>
+          <div className="text-xl text-prot-gray">
+            {data.heightUnit === 'imperial' ? 'lbs' : 'kg'}
+          </div>
+        </div>
+
+        <div className="px-6">
+          <Slider
+            value={[desiredWeight]}
+            onValueChange={(value) => setDesiredWeight(value[0])}
+            min={minWeight}
+            max={maxWeight}
+            step={data.heightUnit === 'imperial' ? 1 : 0.5}
+            className="w-full"
+          />
+          <div className="flex justify-between text-sm text-prot-gray mt-2">
+            <span>{minWeight}</span>
+            <span>{maxWeight}</span>
+          </div>
+        </div>
+      </div>
+    </OnboardingLayout>
   );
 };
 
