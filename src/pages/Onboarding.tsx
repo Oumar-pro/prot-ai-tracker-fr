@@ -42,7 +42,8 @@ const Onboarding = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [data, setData] = useState<OnboardingData>({});
 
-  const totalSteps = 21;
+  // Le nombre total d'étapes inclut maintenant AuthScreen à la fin
+  const totalSteps = 21; // Garde 21 car nous déplaçons AuthScreen au lieu de le supprimer
 
   const handleNext = (stepData?: Partial<OnboardingData>) => {
     if (stepData) {
@@ -52,8 +53,10 @@ const Onboarding = () => {
     if (currentStep < totalSteps - 1) {
       setCurrentStep(prev => prev + 1);
     } else {
-      // Onboarding terminé, rediriger vers l'accueil
-      navigate('/');
+      // Si AuthScreen est la dernière étape, la navigation se fera après l'authentification
+      // Ou ici, si AuthScreen gère sa propre navigation après succès.
+      // Pour l'instant, on maintient la navigation par défaut si toutes les étapes sont passées
+      navigate('/'); 
     }
   };
 
@@ -70,57 +73,57 @@ const Onboarding = () => {
       case 1:
         return <CalorieTrackingIntro onNext={handleNext} onBack={handleBack} />;
       case 2:
-        return <AuthScreen onNext={handleNext} onBack={handleBack} />;
-      case 3:
         return <GenderSelection onNext={handleNext} onBack={handleBack} data={data} />;
-      case 4:
+      case 3:
         return <BirthDateSelection onNext={handleNext} onBack={handleBack} data={data} />;
-      case 5:
+      case 4:
         return <ExerciseFrequency onNext={handleNext} onBack={handleBack} data={data} />;
-      case 6:
+      case 5:
         return <AppExperience onNext={handleNext} onBack={handleBack} data={data} />;
-      case 7:
+      case 6:
         return <LongTermResults onNext={handleNext} onBack={handleBack} />;
-      case 8:
+      case 7:
         return <HeightWeightInput onNext={handleNext} onBack={handleBack} data={data} />;
-      case 9:
+      case 8:
         return <MainGoalSelection onNext={handleNext} onBack={handleBack} data={data} />;
-      case 10:
+      case 9:
         return <DesiredWeightSelection onNext={handleNext} onBack={handleBack} data={data} />;
-      case 11:
+      case 10:
         return <DietPreference onNext={handleNext} onBack={handleBack} data={data} />;
-      case 12:
+      case 11:
         return <PlaceholderComponent 
           onNext={handleNext} 
           onBack={handleBack} 
           data={data}
           title="Objectif réaliste confirmé"
           subtitle="Votre objectif est atteignable !"
-          currentStep={12}
+          currentStep={11}
         />;
-      case 13:
+      case 12:
         return <GoalSpeedSelection onNext={handleNext} onBack={handleBack} data={data} />;
-      case 14:
+      case 13:
         return <PlaceholderComponent 
           onNext={handleNext} 
           onBack={handleBack} 
           data={data}
           title="Vous avez un grand potentiel !"
           subtitle="Les études montrent que vous pouvez atteindre votre objectif"
-          currentStep={14}
+          currentStep={13}
         />;
-      case 15:
+      case 14:
         return <ObstacleIdentification onNext={handleNext} onBack={handleBack} data={data} />;
-      case 16:
+      case 15:
         return <AccomplishmentSelection onNext={handleNext} onBack={handleBack} data={data} />;
-      case 17:
+      case 16:
         return <LoadingScreen onNext={handleNext} data={data} />;
-      case 18:
+      case 17:
         return <PlanSummary onNext={handleNext} data={data} />;
-      case 19:
+      case 18:
         return <ThankYouScreen onNext={handleNext} />;
-      case 20:
+      case 19:
         return <RatingScreen onNext={handleNext} />;
+      case 20: // Nouvelle dernière étape
+        return <AuthScreen onNext={handleNext} onBack={handleBack} />;
       default:
         return <SplashScreen onNext={handleNext} />;
     }
