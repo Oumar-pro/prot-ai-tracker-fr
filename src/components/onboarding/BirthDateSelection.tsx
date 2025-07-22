@@ -32,10 +32,10 @@ const BirthDateSelection: React.FC<BirthDateSelectionProps> = ({ onNext, onBack,
   };
 
   // Composant de sélecteur défilant - INCHANGÉ (logique interne)
-  const ScrollPicker = ({ 
-    items, 
-    selectedIndex, 
-    onSelect, 
+  const ScrollPicker = ({
+    items,
+    selectedIndex,
+    onSelect,
     containerRef,
     formatter = (item: any) => item.toString()
   }: {
@@ -51,7 +51,7 @@ const BirthDateSelection: React.FC<BirthDateSelectionProps> = ({ onNext, onBack,
       const scrollTop = container.scrollTop;
       const newIndex = Math.round(scrollTop / itemHeight);
       const clampedIndex = Math.max(0, Math.min(newIndex, items.length - 1));
-      
+
       if (clampedIndex !== selectedIndex) {
         onSelect(clampedIndex);
       }
@@ -64,7 +64,7 @@ const BirthDateSelection: React.FC<BirthDateSelectionProps> = ({ onNext, onBack,
     }, [selectedIndex, containerRef]);
 
     return (
-      <div 
+      <div
         ref={containerRef}
         className="h-60 overflow-y-auto scrollbar-hide relative"
         onScroll={handleScroll}
@@ -72,16 +72,16 @@ const BirthDateSelection: React.FC<BirthDateSelectionProps> = ({ onNext, onBack,
       >
         {/* Indicateur de sélection */}
         <div className="absolute inset-x-0 top-[100px] h-[60px] bg-prot-orange/10 border-y-2 border-prot-orange/20 pointer-events-none z-10 rounded-xl" />
-        
+
         {/* Padding top et bottom pour centrer */}
         <div className="h-[100px]" />
-        
+
         {items.map((item, index) => (
           <div
             key={index}
             className={`h-[60px] flex items-center justify-center transition-all duration-200 ${
-              index === selectedIndex 
-                ? 'text-prot-black text-2xl font-bold' 
+              index === selectedIndex
+                ? 'text-prot-black text-2xl font-bold'
                 : 'text-prot-medium-gray text-lg opacity-60'
             }`}
             style={{ scrollSnapAlign: 'center' }}
@@ -89,7 +89,7 @@ const BirthDateSelection: React.FC<BirthDateSelectionProps> = ({ onNext, onBack,
             {formatter(item)}
           </div>
         ))}
-        
+
         <div className="h-[100px]" />
       </div>
     );
@@ -102,10 +102,10 @@ const BirthDateSelection: React.FC<BirthDateSelectionProps> = ({ onNext, onBack,
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-prot-black mb-4 leading-tight">
             Quelle est votre date de naissance ?
-          </h2> {/* Traduction */}
+          </h2>
           <p className="text-prot-medium-gray text-lg">
             Ceci nous aide à calculer vos besoins nutritionnels
-          </p> {/* Traduction */}
+          </p>
         </div>
 
         {/* Sélecteurs de date */}
@@ -114,8 +114,9 @@ const BirthDateSelection: React.FC<BirthDateSelectionProps> = ({ onNext, onBack,
             {/* Mois */}
             <div className="bg-prot-light-gray rounded-2xl">
               <div className="p-3 text-center">
-                <span className="text-sm font-medium text-prot-medium-gray">Mois</span>
-              </div> {/* Traduction */}
+                {/* SUGGESTION: Changed text-prot-medium-gray to text-prot-black for better contrast */}
+                <span className="text-sm font-medium text-prot-black">Mois</span>
+              </div>
               <ScrollPicker
                 items={months}
                 selectedIndex={selectedDate.month - 1}
@@ -127,8 +128,9 @@ const BirthDateSelection: React.FC<BirthDateSelectionProps> = ({ onNext, onBack,
             {/* Jour */}
             <div className="bg-prot-light-gray rounded-2xl">
               <div className="p-3 text-center">
-                <span className="text-sm font-medium text-prot-medium-gray">Jour</span>
-              </div> {/* Traduction */}
+                {/* SUGGESTION: Changed text-prot-medium-gray to text-prot-black for better contrast */}
+                <span className="text-sm font-medium text-prot-black">Jour</span>
+              </div>
               <ScrollPicker
                 items={days}
                 selectedIndex={selectedDate.day - 1}
@@ -140,8 +142,9 @@ const BirthDateSelection: React.FC<BirthDateSelectionProps> = ({ onNext, onBack,
             {/* Année */}
             <div className="bg-prot-light-gray rounded-2xl">
               <div className="p-3 text-center">
-                <span className="text-sm font-medium text-prot-medium-gray">Année</span>
-              </div> {/* Traduction */}
+                {/* SUGGESTION: Changed text-prot-medium-gray to text-prot-black for better contrast */}
+                <span className="text-sm font-medium text-prot-black">Année</span>
+              </div>
               <ScrollPicker
                 items={years}
                 selectedIndex={years.indexOf(selectedDate.year)}
@@ -165,11 +168,10 @@ const BirthDateSelection: React.FC<BirthDateSelectionProps> = ({ onNext, onBack,
           className="w-full h-14 bg-prot-orange hover:bg-prot-orange/90 text-prot-black font-semibold text-lg rounded-2xl transition-all duration-200 hover:scale-[1.02] shadow-lg"
         >
           Suivant
-        </Button> {/* Traduction */}
+        </Button>
       </div>
     </OnboardingLayout>
   );
 };
 
 export default BirthDateSelection;
-    
