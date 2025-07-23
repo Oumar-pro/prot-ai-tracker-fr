@@ -3,7 +3,6 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import OnboardingLayout from './OnboardingLayout';
 import { OnboardingData } from '@/pages/Onboarding';
-// MODIFICATION: Changed 'Run' to 'Running'
 import { CheckCircle, CircleDot, Dumbbell, Running, Bike, Award } from 'lucide-react'; // Importez les icônes nécessaires
 
 interface ExerciseFrequencyProps {
@@ -19,7 +18,6 @@ const ExerciseFrequency: React.FC<ExerciseFrequencyProps> = ({ onNext, onBack, d
 
   const frequencyOptions = [
     { value: '0-1' as const, label: '0-1 fois par semaine', description: 'Mode de vie sédentaire', icon: Dumbbell },
-    // MODIFICATION: Used Running here
     { value: '2-3' as const, label: '2-3 fois par semaine', description: 'Activité légère', icon: Running },
     { value: '4-5' as const, label: '4-5 fois par semaine', description: 'Activité modérée', icon: Bike },
     { value: '6-7' as const, label: '6-7 fois par semaine', description: 'Très actif', icon: Award }
@@ -112,4 +110,3 @@ const ExerciseFrequency: React.FC<ExerciseFrequencyProps> = ({ onNext, onBack, d
 };
 
 export default ExerciseFrequency;
-
